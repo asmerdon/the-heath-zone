@@ -1,8 +1,8 @@
 import { useRef, useState, useEffect } from 'react';
 
-export default function WindowFrame({ title, children, onClose }) {
+export default function WindowFrame({ title, children, onClose, defaultPosition }) {
   const windowRef = useRef();
-  const [position, setPosition] = useState({ x: 100, y: 100 });
+  const [position, setPosition] = useState(defaultPosition || { x: 100, y: 100 });
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 

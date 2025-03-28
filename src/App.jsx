@@ -6,6 +6,7 @@ import { useEffect, useState, useRef } from 'react';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [showBackground, setShowBackground] = useState(true);
   const canvasRef = useRef();
 
   // Custom cursor logic
@@ -39,28 +40,38 @@ export default function App() {
   return (
     <>
       {/* Background video */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        src="/bg-loop.mp4"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          objectFit: 'cover',
-          zIndex: -1,
-        }}
-      />
+      {showBackground && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          src="/bg-loop.mp4"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            objectFit: 'cover',
+            zIndex: -1,
+          }}
+        />
+      )}
 
-      <Taskbar onClear={handleClearCanvas} />
+      <Taskbar
+        onClear={handleClearCanvas}
+        onShowSplash={() => setShowSplash(true)}
+        onToggleBackground={() => setShowBackground((prev) => !prev)}
+      />
 
       {/* Splash window as draggable Aero-style panel */}
       {showSplash && (
-        <WindowFrame title="Welcome" onClose={() => setShowSplash(false)}>
+        <WindowFrame
+          title="Welcome"
+          onClose={() => setShowSplash(false)}
+          defaultPosition={{ x: window.innerWidth / 2 - 200, y: window.innerHeight / 2 - 150 }}
+        >
           <div className="ui-window" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h2 style={{ margin: '0 0 0.5rem' }}>The Heath Zone</h2>
             <p style={{ marginBottom: '1.5rem' }}>artist based in se london</p>
@@ -122,6 +133,23 @@ export default function App() {
           background: rgba(255, 255, 255, 0.3);
           box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 1px 6px rgba(0, 0, 0, 0.1);
           transform: translateY(2px);
+        }
+
+        input[type="range"] {
+          appearance: none;
+          height: 6px;
+          background: rgba(255, 255, 255, 0.4);
+          border-radius: 5px;
+          outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+          appearance: none;
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background: white;
+          cursor: pointer;
         }
       `}</style>
     </>
