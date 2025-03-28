@@ -1,9 +1,14 @@
 import CanvasDraw from './components/CanvasDraw';
+import WindowFrame from './components/WindowFrame';
+import Taskbar from './components/Taskbar';
 import './App.css';
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function App() {
-  // Add custom cursor CSS via JS (for now)
+  const [showSplash, setShowSplash] = useState(true);
+  const canvasRef = useRef();
+
+  // Custom cursor logic
   useEffect(() => {
     const cursor = document.createElement('div');
     cursor.id = 'custom-cursor';
@@ -25,6 +30,12 @@ export default function App() {
     };
   }, []);
 
+  const handleClearCanvas = () => {
+    if (canvasRef.current) {
+      canvasRef.current.clearCanvas();
+    }
+  };
+
   return (
     <>
       {/* Background video */}
@@ -45,39 +56,26 @@ export default function App() {
         }}
       />
 
-      {/* Glass UI card */}
-      <div className="ui-block" style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        borderRadius: '20px',
-        border: '1px solid rgba(255, 255, 255, 0.3)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        padding: '2rem 3rem',
-        color: 'white',
-        textAlign: 'center',
-        zIndex: 1001,
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)'
-      }}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
-          The Heath Zone
-        </h1>
-        <p style={{ fontSize: '1rem', marginBottom: '1.5rem' }}>
-          artist based in se london
-        </p>
+      <Taskbar onClear={handleClearCanvas} />
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <a href="https://soundcloud.com/user-952972706" target="_blank" rel="noopener noreferrer" style={glassBtn}>Beats</a>
-          <a href="https://www.mixcloud.com/Altwych/" target="_blank" rel="noopener noreferrer" style={glassBtn}>Radio Show</a>
-          <a href="https://www.are.na/the-heath/channels" target="_blank" rel="noopener noreferrer" style={glassBtn}>Are.na</a>
-          <a href="#" style={glassBtn}>Artwork</a>
-        </div>
-      </div>
+      {/* Splash window as draggable Aero-style panel */}
+      {showSplash && (
+        <WindowFrame title="Welcome" onClose={() => setShowSplash(false)}>
+          <div className="ui-window" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h2 style={{ margin: '0 0 0.5rem' }}>The Heath Zone</h2>
+            <p style={{ marginBottom: '1.5rem' }}>artist based in se london</p>
 
-      <CanvasDraw />
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              <a href="https://soundcloud.com/user-952972706" target="_blank" rel="noopener noreferrer" style={glassBtn}>Beats</a>
+              <a href="https://www.mixcloud.com/Altwych/" target="_blank" rel="noopener noreferrer" style={glassBtn}>Radio Show</a>
+              <a href="https://www.are.na/the-heath/channels" target="_blank" rel="noopener noreferrer" style={glassBtn}>Are.na</a>
+              <a href="#" style={glassBtn}>Artwork</a>
+            </div>
+          </div>
+        </WindowFrame>
+      )}
+
+      <CanvasDraw ref={canvasRef} />
 
       {/* Custom cursor styling */}
       <style>{`
@@ -97,6 +95,21 @@ export default function App() {
           z-index: 2000;
           transform: translate(-50%, -50%);
           transition: transform 0.1s ease-out;
+        }
+
+        * {
+          cursor: default !important;
+        }
+
+        .window-frame .titlebar {
+          background: linear-gradient(to right, rgba(0, 255, 200, 0.35), rgba(0, 150, 255, 0.25));
+          border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .ui-window {
+          user-select: none;
+          -webkit-user-select: none;
+          -ms-user-select: none;
         }
 
         a:hover {
@@ -126,4 +139,7 @@ const glassBtn = {
   backdropFilter: 'blur(8px)',
   WebkitBackdropFilter: 'blur(8px)',
   transition: 'all 0.2s ease',
+  textAlign: 'center',
+  whiteSpace: 'nowrap',
+  flex: '0 0 auto'
 };
