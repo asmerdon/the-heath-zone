@@ -1,12 +1,16 @@
 import CanvasDraw from './components/CanvasDraw';
 import WindowFrame from './components/WindowFrame';
 import Taskbar from './components/Taskbar';
+import ArtworkExplorer from './components/ArtworkExplorer';
+import ImageViewer from './components/ImageViewer';
 import './App.css';
 import { useEffect, useState, useRef } from 'react';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [showBackground, setShowBackground] = useState(true);
+  const [showArtwork, setShowArtwork] = useState(false);
+  const [viewerData, setViewerData] = useState(null);
   const canvasRef = useRef();
 
   // Custom cursor logic
@@ -41,6 +45,7 @@ export default function App() {
     <>
       {/* Background video */}
       {showBackground && (
+      <>
         <video
           autoPlay
           loop
@@ -54,10 +59,23 @@ export default function App() {
             width: '100vw',
             height: '100vh',
             objectFit: 'cover',
-            zIndex: -1,
+            zIndex: -2,
           }}
         />
-      )}
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(4, 5, 5, 0.08)', // light white mist
+            zIndex: -1,
+            pointerEvents: 'none',
+          }}
+        />
+      </>
+    )}
 
       <Taskbar
         onClear={handleClearCanvas}
@@ -80,11 +98,27 @@ export default function App() {
               <a href="https://soundcloud.com/user-952972706" target="_blank" rel="noopener noreferrer" style={glassBtn}>Beats</a>
               <a href="https://www.mixcloud.com/Altwych/" target="_blank" rel="noopener noreferrer" style={glassBtn}>Radio Show</a>
               <a href="https://www.are.na/the-heath/channels" target="_blank" rel="noopener noreferrer" style={glassBtn}>Are.na</a>
-              <a href="#" style={glassBtn}>Artwork</a>
+              <a onClick={() => setShowArtwork(true)} style={glassBtn}>Artwork</a>
             </div>
           </div>
         </WindowFrame>
       )}
+
+      {showArtwork && (
+        <ArtworkExplorer
+          onClose={() => setShowArtwork(false)}
+          onOpenImage={(images, index) => setViewerData({ images, index })}
+        />
+      )}
+
+      {viewerData && (
+        <ImageViewer
+          images={viewerData.images}
+          startIndex={viewerData.index}
+          onClose={() => setViewerData(null)}
+        />
+      )}
+
 
       <CanvasDraw ref={canvasRef} />
 
