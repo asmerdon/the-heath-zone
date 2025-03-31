@@ -51,7 +51,7 @@ export default function App() {
           loop
           muted
           playsInline
-          src="/bg-loop.mp4"
+          src="/bg-loop.mkv"
           style={{
             position: 'fixed',
             top: 0,
@@ -69,7 +69,7 @@ export default function App() {
             left: 0,
             width: '100vw',
             height: '100vh',
-            background: 'rgba(4, 5, 5, 0.08)', // light white mist
+            background: 'rgba(4, 5, 5, 0.12)', // light white mist
             zIndex: -1,
             pointerEvents: 'none',
           }}

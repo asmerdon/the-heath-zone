@@ -11,23 +11,63 @@ export default function ArtworkExplorer({ onClose, onOpenImage }) {
       onClose={onClose}
       defaultPosition={{ x: 150, y: 150 }}
     >
-      {!selectedCollection && (
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+      {!selectedCollection ? (
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem' }}>
           {artworkCollections.map((col) => (
             <div
               key={col.folder}
               onClick={() => setSelectedCollection(col)}
-              style={folderStyle}
+              style={{
+                cursor: 'pointer',
+                width: '120px',
+                textAlign: 'center',
+                background: 'rgba(255,255,255,0.08)',
+                padding: '0.5rem',
+                borderRadius: '10px',
+                border: '1px solid rgba(255,255,255,0.2)',
+              }}
             >
-              📁 {col.name}
+              <div
+                style={{
+                  width: '100%',
+                  height: '80px',
+                  backgroundImage: col.images.length ? `url(${col.images[0]})` : 'none',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  borderRadius: '6px',
+                  marginBottom: '0.5rem',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)', // fallback bg
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  fontSize: '1.5rem',
+                }}
+              >
+                {!col.images.length && '📁'}
+              </div>
+
+              <p style={{ color: '#fff', fontSize: '0.9rem' }}>{col.name}</p>
             </div>
           ))}
         </div>
-      )}
-
-      {selectedCollection && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <button onClick={() => setSelectedCollection(null)} style={backBtnStyle}>← Back</button>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem' }}>
+          <button
+            onClick={() => setSelectedCollection(null)}
+            style={{
+              alignSelf: 'flex-start',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: '#fff',
+              padding: '0.3rem 0.7rem',
+              borderRadius: '6px',
+              fontSize: '0.8rem',
+              cursor: 'pointer',
+            }}
+          >
+            ← Back
+          </button>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
             {selectedCollection.images.map((img, index) => (
               <img
@@ -36,8 +76,8 @@ export default function ArtworkExplorer({ onClose, onOpenImage }) {
                 alt=""
                 onClick={() => onOpenImage(selectedCollection.images, index)}
                 style={{
-                  width: '100px',
-                  height: '100px',
+                  width: '200px',
+                  height: '200px',
                   objectFit: 'cover',
                   borderRadius: '6px',
                   cursor: 'pointer',

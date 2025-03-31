@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 
-export default function WindowFrame({ title, children, onClose, defaultPosition }) {
+export default function WindowFrame({ title, children, onClose, defaultPosition, style = {} }) {
   const windowRef = useRef();
   const [position, setPosition] = useState(defaultPosition || { x: 100, y: 100 });
   const [dragging, setDragging] = useState(false);
@@ -52,11 +52,12 @@ export default function WindowFrame({ title, children, onClose, defaultPosition 
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
         color: 'white',
-        width: '450px',
         zIndex: 1500,
         boxShadow: '0 4px 30px rgba(0,0,0,0.2)',
+        ...style, // 👈 This allows ImageViewer to control width/height
       }}
     >
+
       <div
         className="window-titlebar"
         style={{
@@ -87,7 +88,18 @@ export default function WindowFrame({ title, children, onClose, defaultPosition 
           ✕
         </button>
       </div>
-      <div style={{ padding: '1rem' }}>{children}</div>
+      <div
+        style={{
+          padding: '1rem',
+          height: 'calc(100% - 42px)', // Account for titlebar height
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 }

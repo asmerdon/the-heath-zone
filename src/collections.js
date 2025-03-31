@@ -1,8 +1,10 @@
 export const artworkCollections = [
     {
-      name: 'collection1',
+      name: 'Into the Light',
       images: [
-        '/artwork/collection1/1.png',
+        '/artwork/into-the-light/1.png',
+        '/artwork/into-the-light/2.png',
+        '/artwork/into-the-light/3.png',
       ]
     },
     {
