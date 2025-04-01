@@ -86,7 +86,7 @@ export default function App() {
       {/* Splash window as draggable Aero-style panel */}
       {showSplash && (
         <WindowFrame
-          title="Welcome"
+          title="About"
           onClose={() => setShowSplash(false)}
           defaultPosition={{ x: window.innerWidth / 2 - 200, y: window.innerHeight / 2 - 150 }}
         >
@@ -95,10 +95,10 @@ export default function App() {
             <p style={{ marginBottom: '1.5rem' }}>artist based in se london</p>
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              <a href="https://soundcloud.com/user-952972706" target="_blank" rel="noopener noreferrer" style={glassBtn}>Beats</a>
-              <a href="https://www.mixcloud.com/Altwych/" target="_blank" rel="noopener noreferrer" style={glassBtn}>Radio Show</a>
-              <a href="https://www.are.na/the-heath/channels" target="_blank" rel="noopener noreferrer" style={glassBtn}>Are.na</a>
-              <a onClick={() => setShowArtwork(true)} style={glassBtn}>Artwork</a>
+              <a onClick={() => setShowArtwork(true)} className="glass-button">Artwork</a>
+              <a href="https://soundcloud.com/user-952972706" target="_blank" rel="noopener noreferrer" className="glass-button">Beats</a>
+              <a href="https://www.mixcloud.com/Altwych/" target="_blank" rel="noopener noreferrer" className="glass-button">Radio Show</a>
+              <a href="https://www.are.na/the-heath/channels" target="_blank" rel="noopener noreferrer" className="glass-button">Are.na</a>
             </div>
           </div>
         </WindowFrame>
@@ -119,89 +119,9 @@ export default function App() {
         />
       )}
 
-
       <CanvasDraw ref={canvasRef} />
 
-      {/* Custom cursor styling */}
-      <style>{`
-        #custom-cursor {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background: radial-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.05));
-          border: 1px solid rgba(255,255,255,0.2);
-          box-shadow: 0 0 6px rgba(255,255,255,0.3);
-          backdrop-filter: blur(2px);
-          -webkit-backdrop-filter: blur(2px);
-          pointer-events: none;
-          z-index: 2000;
-          transform: translate(-50%, -50%);
-          transition: transform 0.1s ease-out;
-        }
-
-        * {
-          cursor: default !important;
-        }
-
-        .window-frame .titlebar {
-          background: linear-gradient(to right, rgba(0, 255, 200, 0.35), rgba(0, 150, 255, 0.25));
-          border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .ui-window {
-          user-select: none;
-          -webkit-user-select: none;
-          -ms-user-select: none;
-        }
-
-        a:hover {
-          background: rgba(255, 255, 255, 0.25);
-          box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.3), 0 1px 6px rgba(0, 0, 0, 0.1);
-          transform: translateY(1px);
-        }
-
-        a:active {
-          background: rgba(255, 255, 255, 0.3);
-          box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 1px 6px rgba(0, 0, 0, 0.1);
-          transform: translateY(2px);
-        }
-
-        input[type="range"] {
-          appearance: none;
-          height: 6px;
-          background: rgba(255, 255, 255, 0.4);
-          border-radius: 5px;
-          outline: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-          appearance: none;
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background: white;
-          cursor: pointer;
-        }
-      `}</style>
     </>
   );
 }
 
-const glassBtn = {
-  padding: '0.6rem 1.2rem',
-  background: 'rgba(255, 255, 255, 0.15)',
-  borderRadius: '12px',
-  border: '1px solid rgba(255, 255, 255, 0.3)',
-  color: 'white',
-  fontSize: '0.9rem',
-  textDecoration: 'none',
-  backdropFilter: 'blur(8px)',
-  WebkitBackdropFilter: 'blur(8px)',
-  transition: 'all 0.2s ease',
-  textAlign: 'center',
-  whiteSpace: 'nowrap',
-  flex: '0 0 auto'
-};

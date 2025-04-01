@@ -67,8 +67,8 @@ export default function ImageViewer({ images, startIndex, onClose }) {
             paddingBottom: '1rem',
           }}
         >
-          <button onClick={prevImage} style={navBtnStyle}>←</button>
-          <button onClick={nextImage} style={navBtnStyle}>→</button>
+          <button onClick={prevImage} class="glass-button" style={navBtnStyle}>←</button>
+          <button onClick={nextImage} class="glass-button" style={navBtnStyle}>→</button>
         </div>
       </div>
     </WindowFrame>

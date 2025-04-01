@@ -9,7 +9,7 @@ export default function ArtworkExplorer({ onClose, onOpenImage }) {
     <WindowFrame
       title={selectedCollection ? selectedCollection.name : 'Artwork'}
       onClose={onClose}
-      defaultPosition={{ x: 150, y: 150 }}
+      defaultPosition={{ x: 350, y: 350 }}
     >
       {!selectedCollection ? (
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem' }}>
@@ -17,6 +17,7 @@ export default function ArtworkExplorer({ onClose, onOpenImage }) {
             <div
               key={col.folder}
               onClick={() => setSelectedCollection(col)}
+              className="folder-thumb"
               style={{
                 cursor: 'pointer',
                 width: '120px',
@@ -55,16 +56,8 @@ export default function ArtworkExplorer({ onClose, onOpenImage }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem' }}>
           <button
             onClick={() => setSelectedCollection(null)}
-            style={{
-              alignSelf: 'flex-start',
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              color: '#fff',
-              padding: '0.3rem 0.7rem',
-              borderRadius: '6px',
-              fontSize: '0.8rem',
-              cursor: 'pointer',
-            }}
+            className="glass-button"
+            style={{ alignSelf: 'flex-start' }}
           >
             ← Back
           </button>
@@ -74,13 +67,12 @@ export default function ArtworkExplorer({ onClose, onOpenImage }) {
                 key={index}
                 src={img}
                 alt=""
+                className="gallery-thumb"
                 onClick={() => onOpenImage(selectedCollection.images, index)}
                 style={{
                   width: '200px',
                   height: '200px',
                   objectFit: 'cover',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
                   border: '1px solid rgba(255,255,255,0.2)',
                 }}
               />

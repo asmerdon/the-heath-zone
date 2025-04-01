@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
+import { getNextZIndex } from '../zIndexManager';
 
 export default function WindowFrame({ title, children, onClose, defaultPosition, style = {} }) {
   const windowRef = useRef();
@@ -6,11 +7,15 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
+  const [currentZ, setCurrentZ] = useState(getNextZIndex()); // ✨ this is new
+
   const handleMouseDown = (e) => {
     const rect = windowRef.current.getBoundingClientRect();
     setOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
     setDragging(true);
+    setCurrentZ(getNextZIndex()); // ✨ this brings it to front
   };
+
 
   const handleMouseMove = (e) => {
     if (dragging) {
@@ -42,6 +47,7 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
     <div
       ref={windowRef}
       className="window-frame"
+      onMouseDown={() => setCurrentZ(getNextZIndex())}
       style={{
         position: 'absolute',
         left: position.x,
@@ -52,7 +58,7 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
         color: 'white',
-        zIndex: 1500,
+        zIndex: currentZ,
         boxShadow: '0 4px 30px rgba(0,0,0,0.2)',
         ...style, // 👈 This allows ImageViewer to control width/height
       }}
@@ -76,6 +82,7 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
         <span>{title}</span>
         <button
           onClick={onClose}
+          class="glass-button"
           style={{
             background: 'none',
             border: 'none',

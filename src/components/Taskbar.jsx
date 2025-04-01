@@ -20,10 +20,9 @@ export default function Taskbar({ onClear, onShowSplash, onToggleBackground }) {
       }}
       className="ui-block"
     >
-      <button style={buttonStyle} onClick={onClear}>Clear</button>
-      <button style={buttonStyle} onClick={onShowSplash}>Welcome</button>
-      <button style={buttonStyle} onClick={onToggleBackground}>Toggle BG</button>
-      <input type="range" min={0} max={1} step={0.01} style={sliderStyle} />
+      <button className="glass-button" onClick={onShowSplash}>About</button>
+      <button className="glass-button" onClick={onToggleBackground}>Toggle BG</button>
+      <button className="glass-button" onClick={onClear}>Clear</button>
     </div>
   );
 }

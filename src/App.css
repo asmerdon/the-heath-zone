@@ -40,3 +40,104 @@
 .read-the-docs {
   color: #888;
 }
+
+.glass-button {
+  /* base button styles */
+  padding: 0.6rem 1.2rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 0.9rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  flex: 0 0 auto;
+  text-decoration: none;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.3),
+              0 1px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(1px);
+  color: white; /* force text color to stay the same */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* 🛠 preserve border */
+  text-decoration: none; /* remove link underline */
+}
+
+.glass-button:active {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4),
+              0 1px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(2px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+}
+
+#custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.05));
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 0 6px rgba(255,255,255,0.3);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  pointer-events: none;
+  z-index: 2000;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease-out;
+}
+
+* {
+  cursor: default !important;
+}
+
+.window-frame .titlebar {
+  background: linear-gradient(to right, rgba(0, 255, 200, 0.35), rgba(0, 150, 255, 0.25));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ui-window {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.gallery-thumb {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.gallery-thumb:hover{
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.3),
+              0 1px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(1px);
+  filter: brightness(1.02); /* 💡 Glisten */
+}
+
+
+.folder-thumb {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 10px;
+}
+
+.folder-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.3),
+              0 1px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(1px);
+  filter: brightness(1.02); /* 💡 Glisten */
+}
+
