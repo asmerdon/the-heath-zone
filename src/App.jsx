@@ -2,7 +2,7 @@ import CanvasDraw from './components/CanvasDraw';
 import WindowFrame from './components/WindowFrame';
 import Taskbar from './components/Taskbar';
 import ArtworkExplorer from './components/ArtworkExplorer';
-import ImageViewer from './components/ImageViewer';
+import MediaViewer from './components/MediaViewer';
 import './App.css';
 import { useEffect, useState, useRef } from 'react';
 
@@ -112,8 +112,8 @@ export default function App() {
       )}
 
       {viewerData && (
-        <ImageViewer
-          images={viewerData.images}
+        <MediaViewer
+          items={viewerData.images}
           startIndex={viewerData.index}
           onClose={() => setViewerData(null)}
         />

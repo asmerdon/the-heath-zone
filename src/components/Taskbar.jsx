@@ -10,7 +10,7 @@ export default function Taskbar({ onClear, onShowSplash, onToggleBackground }) {
         display: 'flex',
         gap: '0.5rem',
         padding: '0.5rem 1rem',
-        background: 'rgba(255, 255, 255, 0.1)',
+        background: 'rgba(17, 195, 219, 0.17)',
         border: '1px solid rgba(255, 255, 255, 0.25)',
         borderRadius: '16px',
         backdropFilter: 'blur(10px)',
