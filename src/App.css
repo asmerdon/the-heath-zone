@@ -92,13 +92,17 @@
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   pointer-events: none;
-  z-index: 2000;
+  z-index: 1900;
   transform: translate(-50%, -50%);
   transition: transform 0.1s ease-out;
 }
 
 * {
   cursor: default !important;
+}
+
+.window-frame {
+  /* removed isolation and transform properties */
 }
 
 .window-frame .titlebar {
@@ -164,25 +168,61 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(17, 195, 219, 0.17);
+  background: rgba(17, 195, 219, 0.25);
   backdropFilter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   width: 60px;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
   cursor: pointer;
 }
 
-.video-play-button:hover {
-  transform: translate(-50%, -50%) scale(1.1);
-  background: rgba(17, 195, 219, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+/* Try to remove the black gradient from video controls */
+video::-webkit-media-controls-enclosure {
+  background: none !important;
+}
+
+video::-webkit-media-controls-panel {
+  background: none !important;
+}
+
+/* Prevent selection when dragging windows */
+.window-frame,
+.window-frame *,
+.gallery-container,
+.gallery-thumb,
+.video-play-button,
+.glass-button {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+/* Remove focus outlines */
+button,
+.glass-button,
+a {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus,
+.glass-button:focus,
+a:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:focus-visible,
+.glass-button:focus-visible,
+a:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }
 

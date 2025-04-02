@@ -20,7 +20,7 @@ export default function ArtworkExplorer({ onClose, onOpenImage }) {
               className="folder-thumb"
               style={{
                 cursor: 'pointer',
-                width: '120px',
+                width: '160px',
                 textAlign: 'center',
                 background: 'rgba(255,255,255,0.08)',
                 padding: '0.5rem',
@@ -31,7 +31,7 @@ export default function ArtworkExplorer({ onClose, onOpenImage }) {
               <div
                 style={{
                   width: '100%',
-                  height: '80px',
+                  height: '120px',
                   backgroundImage: col.items?.length ? `url(${col.items[0].type === 'image' ? col.items[0].url : col.items[0].thumbnail})` : 'none',
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',

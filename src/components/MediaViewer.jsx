@@ -16,6 +16,20 @@ export default function MediaViewer({ items, startIndex, onClose }) {
     setIndex((prev) => (prev + 1) % items.length);
   };
 
+  // Add keyboard navigation with proper dependencies
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === 'ArrowLeft') {
+        prevItem();
+      } else if (e.key === 'ArrowRight') {
+        nextItem();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [items, index]); // Add items and index as dependencies
+
   const currentItem = items[index];
 
   return (

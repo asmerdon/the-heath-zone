@@ -21,8 +21,9 @@ export default function App() {
 
     const move = (e) => {
       const target = e.target;
-      const isOverUI = target.closest('.ui-block');
-      cursor.style.display = isOverUI ? 'none' : 'block';
+      // Only hide cursor over buttons and interactive elements
+      const isOverInteractive = target.closest('button, a, .glass-button, input, .gallery-thumb, .folder-thumb');
+      cursor.style.display = isOverInteractive ? 'none' : 'block';
       cursor.style.left = `${e.clientX}px`;
       cursor.style.top = `${e.clientY}px`;
     };
