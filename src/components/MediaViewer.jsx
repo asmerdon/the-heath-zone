@@ -1,34 +1,45 @@
 import WindowFrame from './WindowFrame';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function MediaViewer({ items, startIndex, onClose }) {
   const [index, setIndex] = useState(startIndex);
 
+  // Reset index when items change
   useEffect(() => {
     setIndex(startIndex);
-  }, [startIndex, items]);
+  }, [items, startIndex]);
 
-  const prevItem = () => {
+  const prevItem = useCallback(() => {
     setIndex((prev) => (prev - 1 + items.length) % items.length);
-  };
+  }, [items]);
 
-  const nextItem = () => {
+  const nextItem = useCallback(() => {
     setIndex((prev) => (prev + 1) % items.length);
-  };
+  }, [items]);
 
-  // Add keyboard navigation with proper dependencies
+  // Add keyboard navigation with proper cleanup
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (e.key === 'ArrowLeft') {
         prevItem();
       } else if (e.key === 'ArrowRight') {
         nextItem();
+      } else if (e.key === 'Escape') {
+        onClose();
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [items, index]); // Add items and index as dependencies
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [prevItem, nextItem, onClose]);
+
+  // Guard against undefined items
+  if (!items || !items[index]) {
+    onClose();
+    return null;
+  }
 
   const currentItem = items[index];
 

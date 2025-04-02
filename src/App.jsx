@@ -47,9 +47,36 @@ export default function App() {
 
   return (
     <>
-      {/* Background video */}
-      {showBackground && (
-      <>
+      {/* Background video or image */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundImage: 'url(/background.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: -2,
+          opacity: showBackground ? 0 : 1,
+          transition: 'opacity 0.5s ease',
+          pointerEvents: 'none',
+        }}
+      />
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: -2,
+          opacity: showBackground ? 1 : 0,
+          transition: 'opacity 0.5s ease',
+          pointerEvents: 'none',
+        }}
+      >
         <video
           autoPlay
           loop
@@ -57,29 +84,27 @@ export default function App() {
           playsInline
           src="/bg-loop.mkv"
           style={{
-            position: 'fixed',
+            position: 'absolute',
             top: 0,
             left: 0,
-            width: '100vw',
-            height: '100vh',
+            width: '100%',
+            height: '100%',
             objectFit: 'cover',
-            zIndex: -2,
           }}
         />
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(4, 5, 5, 0.12)', // light white mist
-            zIndex: -1,
-            pointerEvents: 'none',
-          }}
-        />
-      </>
-    )}
+      </div>
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(4, 5, 5, 0.12)', // light white mist
+          zIndex: -1,
+          pointerEvents: 'none',
+        }}
+      />
 
       <Taskbar
         onClear={handleClearCanvas}

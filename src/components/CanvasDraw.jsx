@@ -67,7 +67,7 @@ const CanvasDraw = forwardRef((_, ref) => {
 
         setTimeout(() => {
           trailCtx.clearRect(ix - 3, iy - 3, 6, 6);
-        }, 1000);
+        }, 100);
       }
     }
 
