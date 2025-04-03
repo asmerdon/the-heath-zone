@@ -1,16 +1,47 @@
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import WindowFrame from './WindowFrame';
-import { useState, useEffect, useCallback } from 'react';
 import { getNextZIndex } from '../zIndexManager';
+import '../styles/WindowStyles.css';
 
 export default function MediaViewer({ items, startIndex, onClose, onPositionChange }) {
   const [index, setIndex] = useState(startIndex);
   const [currentZ, setCurrentZ] = useState(getNextZIndex());
+  const [isLoading, setIsLoading] = useState(true);
 
   // Reset index when items change and bring to front
   useEffect(() => {
     setIndex(startIndex);
     setCurrentZ(getNextZIndex());
   }, [items, startIndex]);
+
+  // Preload next and previous images
+  useEffect(() => {
+    const preloadImage = (url) => {
+      if (!url) return;
+      const img = new Image();
+      img.src = url;
+    };
+
+    // Preload current image
+    const currentItem = items[index];
+    if (currentItem?.type === 'image') {
+      setIsLoading(true);
+      const img = new Image();
+      img.onload = () => setIsLoading(false);
+      img.src = currentItem.url;
+    }
+
+    // Preload next and previous images
+    const nextIndex = (index + 1) % items.length;
+    const prevIndex = (index - 1 + items.length) % items.length;
+    
+    if (items[nextIndex]?.type === 'image') {
+      preloadImage(items[nextIndex].url);
+    }
+    if (items[prevIndex]?.type === 'image') {
+      preloadImage(items[prevIndex].url);
+    }
+  }, [items, index]);
 
   const prevItem = useCallback(() => {
     setIndex((prev) => (prev - 1 + items.length) % items.length);
@@ -48,95 +79,51 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
 
   const currentItem = items[index];
 
+  // Memoized window style
+  const windowStyle = useMemo(() => ({
+    width: '900px',
+    height: '900px',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    zIndex: currentZ,
+  }), [currentZ]);
+
   return (
     <WindowFrame
       title="Viewer"
       onClose={onClose}
       defaultPosition={{ x: 1200, y: 100 }}
       onPositionChange={onPositionChange}
-      style={{
-        width: '900px',
-        height: '900px',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        zIndex: currentZ,
-      }}
+      style={windowStyle}
     >
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Media section */}
-        <div
-          style={{
-            flex: 1,
-            overflow: 'hidden',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '1rem',
-          }}
-        >
+      <div className="media-viewer">
+        <div className="media-content">
+          {isLoading && currentItem.type === 'image' && (
+            <div className="loading-indicator">Loading...</div>
+          )}
           {currentItem.type === 'image' ? (
             <img
               src={currentItem.url}
               alt=""
-              style={{
-                maxWidth: '100%',
-                maxHeight: '100%',
-                objectFit: 'contain',
-                borderRadius: '12px',
-                boxShadow: '0 0 12px rgba(0,0,0,0.2)',
-              }}
+              className="media-image"
+              style={{ opacity: isLoading ? 0 : 1 }}
             />
           ) : (
             <video
               src={currentItem.url}
               controls
               autoPlay
-              style={{
-                maxWidth: '100%',
-                maxHeight: '100%',
-                objectFit: 'contain',
-                borderRadius: '12px',
-                boxShadow: '0 0 12px rgba(0,0,0,0.2)',
-              }}
+              className="media-video"
             />
           )}
         </div>
 
-        {/* Button section */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '1rem',
-            paddingBottom: '1rem',
-          }}
-        >
-          <button onClick={prevItem} className="glass-button" style={navBtnStyle}>←</button>
-          <button onClick={nextItem} className="glass-button" style={navBtnStyle}>→</button>
+        <div className="media-controls">
+          <button onClick={prevItem} className="nav-button">←</button>
+          <button onClick={nextItem} className="nav-button">→</button>
         </div>
       </div>
     </WindowFrame>
   );
 }
-
-const navBtnStyle = {
-  padding: '0.5rem 1rem',
-  borderRadius: '8px',
-  border: 'none',
-  background: 'rgba(255, 255, 255, 0.15)',
-  color: 'white',
-  fontSize: '1.1rem',
-  cursor: 'pointer',
-  backdropFilter: 'blur(5px)',
-  WebkitBackdropFilter: 'blur(5px)',
-  border: '1px solid rgba(255,255,255,0.3)',
-};

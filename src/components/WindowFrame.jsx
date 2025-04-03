@@ -1,5 +1,16 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { getNextZIndex } from '../zIndexManager';
+import WindowTitlebar from './WindowTitlebar';
+import '../styles/WindowStyles.css';
+
+// Debounce function
+const debounce = (fn, ms) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+};
 
 export default function WindowFrame({ title, children, onClose, defaultPosition, style = {}, onPositionChange }) {
   const windowRef = useRef();
@@ -9,13 +20,20 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [currentZ, setCurrentZ] = useState(getNextZIndex());
 
-  // Track window size and send initial position
-  useEffect(() => {
-    const updateSize = () => {
+  // Memoized position style
+  const positionStyle = useMemo(() => ({
+    left: position.x,
+    top: position.y,
+    zIndex: currentZ,
+    ...style,
+  }), [position.x, position.y, currentZ, style]);
+
+  // Debounced size update
+  const debouncedUpdateSize = useCallback(
+    debounce(() => {
       if (windowRef.current) {
         const rect = windowRef.current.getBoundingClientRect();
         setSize({ width: rect.width, height: rect.height });
-        // Send initial position and size
         onPositionChange?.({ 
           x: position.x, 
           y: position.y, 
@@ -24,30 +42,34 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
           id: title
         });
       }
-    };
+    }, 100),
+    [position.x, position.y, title]
+  );
 
+  // Track window size and send initial position
+  useEffect(() => {
     // Initial update with RAF to ensure DOM is ready
     requestAnimationFrame(() => {
-      updateSize();
+      debouncedUpdateSize();
     });
 
     // Also update on resize
-    window.addEventListener('resize', updateSize);
+    window.addEventListener('resize', debouncedUpdateSize);
     return () => {
-      window.removeEventListener('resize', updateSize);
+      window.removeEventListener('resize', debouncedUpdateSize);
       // Notify parent when window is unmounted
       onPositionChange?.({ id: title, removed: true });
     };
-  }, [position, title, onPositionChange]);
+  }, [debouncedUpdateSize, title, onPositionChange]);
 
-  const handleMouseDown = (e) => {
+  const handleMouseDown = useCallback((e) => {
     const rect = windowRef.current.getBoundingClientRect();
     setOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
     setDragging(true);
     setCurrentZ(getNextZIndex());
-  };
+  }, []);
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
     if (dragging) {
       const newPosition = {
         x: e.clientX - offset.x,
@@ -62,9 +84,11 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
         id: title
       });
     }
-  };
+  }, [dragging, offset.x, offset.y, size.width, size.height, title, onPositionChange]);
 
-  const handleMouseUp = () => setDragging(false);
+  const handleMouseUp = useCallback(() => {
+    setDragging(false);
+  }, []);
 
   useEffect(() => {
     if (dragging) {
@@ -79,69 +103,21 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [dragging]);
+  }, [dragging, handleMouseMove, handleMouseUp]);
 
   return (
     <div
       ref={windowRef}
       className="window-frame"
       onMouseDown={() => setCurrentZ(getNextZIndex())}
-      style={{
-        position: 'absolute',
-        left: position.x,
-        top: position.y,
-        background: 'rgba(255, 255, 255, 0.15)',
-        borderRadius: '10px',
-        border: '1px solid rgba(255, 255, 255, 0.25)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        color: 'white',
-        zIndex: currentZ,
-        boxShadow: '0 4px 30px rgba(0,0,0,0.2)',
-        ...style,
-      }}
+      style={positionStyle}
     >
-      <div
-        className="window-titlebar"
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0.5rem 1rem',
-          borderBottom: '1px solid rgba(255,255,255,0.2)',
-          background: 'rgba(17, 195, 219, 0.17)',
-          cursor: 'move',
-          fontWeight: 'bold',
-          fontSize: '0.9rem',
-        }}
+      <WindowTitlebar
+        title={title}
+        onClose={onClose}
         onMouseDown={handleMouseDown}
-      >
-        <span>{title}</span>
-        <button
-          onClick={onClose}
-          class="glass-button"
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'white',
-            fontSize: '1rem',
-            cursor: 'pointer',
-            marginLeft: '0.5rem',
-          }}
-        >
-          ✕
-        </button>
-      </div>
-      <div
-        style={{
-          padding: '1rem',
-          height: 'calc(100% - 42px)', // Account for titlebar height
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
+      />
+      <div className="window-content">
         {children}
       </div>
     </div>

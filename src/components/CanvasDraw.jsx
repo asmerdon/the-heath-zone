@@ -44,7 +44,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     ctx.fillStyle = '#11C3DB';
     ctx.fill();
     
-    if (globalFirstPoint.current) {
+    if (!globalFirstPoint.current) {
       globalFirstPoint.current = { x: flagX, y: flagY };
     }
     
@@ -147,12 +147,10 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     currentLine.current = [];
     firstPoint.current = { x, y };
 
-    // Only set globalFirstPoint and draw flag if this is the first line
     if (!globalFirstPoint.current) {
-      // Offset the spawn point slightly to better align with the line
       globalFirstPoint.current = { 
-        x: x + 10, // Move spawn point right
-        y: y - 5   // Move spawn point up
+        x: x + 10,
+        y: y - 5
       };
       const ctx = canvasRef.current.getContext('2d');
       drawFlag(ctx, x, y);
