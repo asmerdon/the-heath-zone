@@ -2,7 +2,7 @@ import WindowFrame from './WindowFrame';
 import { useState, useEffect, useCallback } from 'react';
 import { getNextZIndex } from '../zIndexManager';
 
-export default function MediaViewer({ items, startIndex, onClose }) {
+export default function MediaViewer({ items, startIndex, onClose, onPositionChange }) {
   const [index, setIndex] = useState(startIndex);
   const [currentZ, setCurrentZ] = useState(getNextZIndex());
 
@@ -53,6 +53,7 @@ export default function MediaViewer({ items, startIndex, onClose }) {
       title="Viewer"
       onClose={onClose}
       defaultPosition={{ x: 1200, y: 100 }}
+      onPositionChange={onPositionChange}
       style={{
         width: '900px',
         height: '900px',

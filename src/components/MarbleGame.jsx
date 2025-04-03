@@ -190,60 +190,20 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
         return;
       }
 
-      // Get the first line segment to determine direction
-      const firstLine = linesRef.current[0];
-      if (!firstLine) return;
-
-      // Get the first line's vertices
-      const vertices = firstLine.vertices;
-      
-      // Calculate direction vector of the first line segment
-      const dx = vertices[1].x - vertices[0].x;
-      const dy = vertices[1].y - vertices[0].y;
-      const length = Math.sqrt(dx * dx + dy * dy);
-      
-      // Normalize direction vector
-      const dirX = dx / length;
-      const dirY = dy / length;
-
-      // Calculate spawn position at the spawn point
+      const spawnHeight = 50; // Increase this value to spawn higher
       const spawnX = spawnPointRef.current.x;
-      const spawnY = spawnPointRef.current.y;
+      const spawnY = spawnPointRef.current.y - spawnHeight; // Spawn higher above the flag
 
-      // Create a marble with adjusted physics properties
-      const marble = Matter.Bodies.circle(
-        spawnX,
-        spawnY,
-        10,
-        {
-          restitution: 0.6,
-          friction: 0.001,
-          frictionAir: 0.0001,
-          density: 0.1,
-          render: {
-            fillStyle: '#11C3DB',
-            opacity: 0.8
-          }
+      const marble = Matter.Bodies.circle(spawnX, spawnY, 10, {
+        restitution: 0.6,
+        friction: 0.002,
+        density: 0.002,
+        render: {
+          fillStyle: '#11C3DB'
         }
-      );
-
-      // Set initial velocity with a downward bias
-      const speed = 2; // Reduced initial speed for better control
-      const downwardBias = 0.2; // Reduced downward bias
-      Matter.Body.setVelocity(marble, {
-        x: dirX * speed,
-        y: Math.max(0.1, dirY) * speed + downwardBias
       });
 
-      // Add the marble to the world
       Matter.World.add(engine.world, marble);
-
-      // Clean up marbles that fall off screen
-      setTimeout(() => {
-        if (marble.position.y > window.innerHeight + 50) {
-          Matter.World.remove(engine.world, marble);
-        }
-      }, 10000); // Increased timeout to allow for longer falls
     },
     handleNewLines,
     handleWindowUpdate // Expose window update function

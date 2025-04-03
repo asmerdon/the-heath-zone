@@ -9,19 +9,36 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [currentZ, setCurrentZ] = useState(getNextZIndex());
 
-  // Track window size
+  // Track window size and send initial position
   useEffect(() => {
     const updateSize = () => {
       if (windowRef.current) {
         const rect = windowRef.current.getBoundingClientRect();
         setSize({ width: rect.width, height: rect.height });
+        // Send initial position and size
+        onPositionChange?.({ 
+          x: position.x, 
+          y: position.y, 
+          width: rect.width, 
+          height: rect.height,
+          id: title
+        });
       }
     };
 
-    updateSize();
+    // Initial update with RAF to ensure DOM is ready
+    requestAnimationFrame(() => {
+      updateSize();
+    });
+
+    // Also update on resize
     window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
-  }, [position, title]);
+    return () => {
+      window.removeEventListener('resize', updateSize);
+      // Notify parent when window is unmounted
+      onPositionChange?.({ id: title, removed: true });
+    };
+  }, [position, title, onPositionChange]);
 
   const handleMouseDown = (e) => {
     const rect = windowRef.current.getBoundingClientRect();
@@ -63,13 +80,6 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [dragging]);
-
-  // Notify parent when window is unmounted
-  useEffect(() => {
-    return () => {
-      onPositionChange?.({ id: title, removed: true });
-    };
-  }, [title]);
 
   return (
     <div
