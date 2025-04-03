@@ -1,7 +1,9 @@
 import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import Matter from 'matter-js';
 
+// Physics game component for marble and line interactions
 const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
+  // Refs for Matter.js engine and objects
   const sceneRef = useRef(null);
   const engineRef = useRef(null);
   const renderRef = useRef(null);
@@ -12,7 +14,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
   const windowBodiesRef = useRef(new Map()); // Store window physics bodies
   const MAX_MARBLES = 50; // Maximum number of marbles allowed at once
 
-  // Function to convert a line segment to a physics body
+  // Convert a line segment to a Matter.js physics body
   const createLineBody = (line) => {
     const thickness = line.width;
     const length = Math.sqrt(
@@ -42,7 +44,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
     });
   };
 
-  // Function to handle new line segments and spawn point
+  // Handle new line segments and spawn point updates
   const handleNewLines = (lines, spawnPoint) => {
     const engine = engineRef.current;
     if (!engine) return;
@@ -72,7 +74,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
     linesRef.current.push(...bodies);
   };
 
-  // Function to create or update a window physics body
+  // Create or update window physics bodies for UI interaction
   const handleWindowUpdate = ({ id, x, y, width, height, removed }) => {
     const engine = engineRef.current;
     if (!engine) return;
@@ -87,7 +89,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
     // If window was removed, we're done
     if (removed) return;
 
-    // Create new body for window
+    // Create new body for window with physics properties
     const body = Matter.Bodies.rectangle(
       x + width / 2,  // Center position
       y + height / 2,
@@ -111,6 +113,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
     windowBodiesRef.current.set(id, body);
   };
 
+  // Initialize Matter.js physics engine and setup
   useEffect(() => {
     // Initialize Matter.js engine with higher precision
     const engine = Matter.Engine.create({
@@ -119,7 +122,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
     });
     engineRef.current = engine;
 
-    // Create renderer
+    // Create renderer with transparent background
     const render = Matter.Render.create({
       canvas: sceneRef.current,
       engine: engine,
@@ -133,11 +136,11 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
     });
     renderRef.current = render;
 
-    // Set up stronger gravity
+    // Set up gravity with reduced scale
     engine.world.gravity.y = 1;
-    engine.world.gravity.scale = 0.0008; // Slightly reduced gravity
+    engine.world.gravity.scale = 0.0008;
 
-    // Create walls to keep marbles in bounds
+    // Create invisible walls to keep marbles in bounds
     const wallOptions = {
       isStatic: true,
       render: { visible: false },
@@ -145,23 +148,22 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
       restitution: 0.8
     };
 
-    // Create walls (only sides, no bottom)
+    // Create side walls only (no bottom)
     const walls = [
       Matter.Bodies.rectangle(-50, window.innerHeight / 2, 100, window.innerHeight, wallOptions), // left
       Matter.Bodies.rectangle(window.innerWidth + 50, window.innerHeight / 2, 100, window.innerHeight, wallOptions), // right
     ];
 
-    // Add walls to the world
     Matter.World.add(engine.world, walls);
 
-    // Create and start the runner
+    // Create physics runner at 60 FPS
     const runner = Matter.Runner.create({
       isFixed: true,
-      delta: 1000 / 60 // Run at 60 FPS
+      delta: 1000 / 60
     });
     runnerRef.current = runner;
 
-    // Start the engine and renderer
+    // Start physics simulation
     Matter.Runner.run(runner, engine);
     Matter.Render.run(render);
 
@@ -174,7 +176,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
     };
     window.addEventListener('resize', handleResize);
 
-    // Cleanup
+    // Cleanup physics engine on unmount
     return () => {
       Matter.Render.stop(render);
       Matter.Runner.stop(runner);
@@ -192,40 +194,38 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
         return;
       }
 
-      // Check if we've reached the maximum number of marbles
+      // Remove oldest marble if at maximum
       if (marblesRef.current.length >= MAX_MARBLES) {
-        // Remove the oldest marble
         const oldestMarble = marblesRef.current.shift();
         if (oldestMarble) {
           Matter.World.remove(engine.world, oldestMarble);
         }
       }
 
-      // Get the first line segment to determine direction
+      // Get direction from first line segment
       const firstLine = linesRef.current[0];
       if (!firstLine) return;
 
-      // Get the first line's vertices
       const vertices = firstLine.vertices;
       
-      // Calculate direction vector of the first line segment
+      // Calculate normalized direction vector
       const dx = vertices[1].x - vertices[0].x;
       const dy = vertices[1].y - vertices[0].y;
       const length = Math.sqrt(dx * dx + dy * dy);
-      
-      // Normalize direction vector
       const dirX = dx / length;
       const dirY = dy / length;
 
+      // Create marble at spawn point
       const spawnHeight = 50;
       const spawnX = spawnPointRef.current.x;
       const spawnY = spawnPointRef.current.y - spawnHeight;
 
+      // Create marble with physics properties
       const marble = Matter.Bodies.circle(spawnX, spawnY, 10, {
-        restitution: 0.8, // Increased from 0.6
-        friction: 0.001, // Reduced friction
-        density: 0.001, // Reduced density for more reactive movement
-        frictionAir: 0.0001, // Reduced air friction
+        restitution: 0.8,
+        friction: 0.001,
+        density: 0.001,
+        frictionAir: 0.0001,
         render: {
           fillStyle: 'transparent',
           strokeStyle: '#11C3DB',
@@ -238,16 +238,16 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
         }
       });
 
-      // Set initial velocity with a downward bias
-      const speed = 2; // Reduced initial speed for better control
-      const downwardBias = 0.2; // Reduced downward bias
+      // Set initial velocity with slight downward bias
+      const speed = 2;
+      const downwardBias = 0.2;
       Matter.Body.setVelocity(marble, {
         x: dirX * speed,
         y: Math.max(0.1, dirY) * speed + downwardBias
       });
 
       Matter.World.add(engine.world, marble);
-      marblesRef.current.push(marble); // Add to our marble tracking array
+      marblesRef.current.push(marble);
 
       // Clean up marbles that fall off screen
       const cleanupInterval = setInterval(() => {
@@ -256,36 +256,36 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
           marblesRef.current = marblesRef.current.filter(m => m !== marble);
           clearInterval(cleanupInterval);
         }
-      }, 1000); // Check every second instead of waiting 10 seconds
+      }, 1000);
     },
     handleNewLines,
-    handleWindowUpdate // Expose window update function
+    handleWindowUpdate
   }));
 
-  // Create a glass marble texture
+  // Create glass marble texture with gradients
   const createMarbleTexture = () => {
     const canvas = document.createElement('canvas');
     canvas.width = 200;
     canvas.height = 200;
     const ctx = canvas.getContext('2d');
     
-    // Create radial gradient for the main sphere with higher opacity
+    // Main sphere gradient with transparency
     const gradient = ctx.createRadialGradient(100, 80, 10, 100, 100, 100);
-    gradient.addColorStop(0, 'rgba(17, 195, 219, 0.7)');  // More opaque center
+    gradient.addColorStop(0, 'rgba(17, 195, 219, 0.7)');
     gradient.addColorStop(0.3, 'rgba(17, 195, 219, 0.6)');
     gradient.addColorStop(0.5, 'rgba(17, 195, 219, 0.5)');
     gradient.addColorStop(0.7, 'rgba(17, 195, 219, 0.4)');
-    gradient.addColorStop(1, 'rgba(17, 195, 219, 0.3)');  // More visible edge
+    gradient.addColorStop(1, 'rgba(17, 195, 219, 0.3)');
 
-    // Draw the main sphere
+    // Draw main sphere
     ctx.beginPath();
     ctx.arc(100, 100, 98, 0, Math.PI * 2);
     ctx.fillStyle = gradient;
     ctx.fill();
 
-    // Add stronger highlight
+    // Add main highlight
     const highlightGradient = ctx.createRadialGradient(70, 70, 0, 70, 70, 50);
-    highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');  // Brighter highlight
+    highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
     highlightGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.4)');
     highlightGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
@@ -294,9 +294,9 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
     ctx.fillStyle = highlightGradient;
     ctx.fill();
 
-    // Add a brighter small highlight
+    // Add secondary highlight
     const smallHighlight = ctx.createRadialGradient(130, 130, 0, 130, 130, 20);
-    smallHighlight.addColorStop(0, 'rgba(255, 255, 255, 0.8)');  // Brighter small highlight
+    smallHighlight.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
     smallHighlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
     ctx.beginPath();
@@ -304,10 +304,10 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
     ctx.fillStyle = smallHighlight;
     ctx.fill();
 
-    // Add stronger edge highlight
+    // Add edge highlight
     ctx.beginPath();
     ctx.arc(100, 100, 98, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(17, 195, 219, 0.8)';  // More visible edge
+    ctx.strokeStyle = 'rgba(17, 195, 219, 0.8)';
     ctx.lineWidth = 4;
     ctx.stroke();
 

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useImperativeHandle, forwardRef, useState } from 'react';
 
+// Canvas component for drawing lines and handling pointer events
 const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
+  // Refs for canvas elements and drawing state
   const canvasRef = useRef(null);
   const trailCanvasRef = useRef(null);
   const prevPoint = useRef(null);
@@ -12,6 +14,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
   const firstPoint = useRef(null);
   const globalFirstPoint = useRef(null);
 
+  // Generate random color in cyan/blue hue range
   const getRandomColor = () => {
     const hue = 180 + Math.random() * 40;
     const sat = 80 + Math.random() * 15;
@@ -19,6 +22,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     return `hsl(${hue}, ${sat}%, ${light}%)`;
   };
 
+  // Draw flag indicator at starting point
   const drawFlag = (ctx, x, y) => {
     const flagHeight = 30;
     const flagWidth = 20;
@@ -30,6 +34,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     
     ctx.save();
     
+    // Draw flag pole
     ctx.beginPath();
     ctx.moveTo(flagX, flagY);
     ctx.lineTo(flagX, flagY - flagHeight);
@@ -37,6 +42,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     ctx.lineWidth = 2;
     ctx.stroke();
     
+    // Draw flag triangle
     ctx.beginPath();
     ctx.moveTo(flagX, flagY - flagHeight);
     ctx.lineTo(flagX + flagWidth, flagY - flagHeight + flagWidth/2);
@@ -44,6 +50,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     ctx.fillStyle = '#11C3DB';
     ctx.fill();
     
+    // Store flag position for marble spawning
     if (!globalFirstPoint.current) {
       globalFirstPoint.current = { x: flagX, y: flagY };
     }
@@ -51,6 +58,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     ctx.restore();
   };
 
+  // Redraw flag when needed (e.g. on resize)
   const updateFlag = () => {
     if (!globalFirstPoint.current) return;
     
@@ -58,6 +66,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     drawFlag(ctx, globalFirstPoint.current.x, globalFirstPoint.current.y);
   };
 
+  // Handle window resize
   useEffect(() => {
     const resize = () => {
       const w = window.innerWidth;
@@ -76,12 +85,14 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     return () => window.removeEventListener('resize', resize);
   }, []);
 
+  // Handle pointer movement for drawing and effects
   const handlePointerMove = (e) => {
     const x = e.clientX;
     const y = e.clientY;
     const drawCtx = canvasRef.current.getContext('2d');
     const trailCtx = trailCanvasRef.current.getContext('2d');
 
+    // Draw line if currently drawing
     if (isDrawing && prevPoint.current) {
       drawCtx.beginPath();
       drawCtx.moveTo(prevPoint.current.x, prevPoint.current.y);
@@ -94,6 +105,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
       drawCtx.shadowBlur = 2;
       drawCtx.stroke();
 
+      // Store line segment for physics
       currentLine.current.push({
         x1: prevPoint.current.x,
         y1: prevPoint.current.y,
@@ -103,6 +115,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
         color: strokeColor.current
       });
     } else if (!isDrawing && prevPoint.current) {
+      // Create trail effect when moving without drawing
       const dx = x - prevPoint.current.x;
       const dy = y - prevPoint.current.y;
       const dist = Math.hypot(dx, dy);
@@ -117,12 +130,14 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
         trailCtx.fillStyle = color;
         trailCtx.fill();
 
+        // Fade out trail particles
         setTimeout(() => {
           trailCtx.clearRect(ix - 3, iy - 3, 6, 6);
-        }, 100);
+        }, 25);
       }
     }
 
+    // Handle drip effect when holding still
     if (isDrawing) {
       const movedFar = !prevPoint.current
         ? false
@@ -138,6 +153,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     prevPoint.current = { x, y };
   };
 
+  // Start drawing on pointer down
   const handlePointerDown = (e) => {
     const x = e.clientX;
     const y = e.clientY;
@@ -147,6 +163,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     currentLine.current = [];
     firstPoint.current = { x, y };
 
+    // Create flag on first draw
     if (!globalFirstPoint.current) {
       globalFirstPoint.current = { 
         x: x + 10,
@@ -157,6 +174,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     }
   };
 
+  // End drawing and convert to physics objects
   const handlePointerUp = () => {
     setIsDrawing(false);
     prevPoint.current = null;
@@ -169,6 +187,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     }
   };
 
+  // Create drip effect when holding still
   useEffect(() => {
     if (!isDrawing || !holdData) return;
     const interval = setInterval(() => {
@@ -188,6 +207,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     return () => clearInterval(interval);
   }, [isDrawing, holdData]);
 
+  // Animate drips falling
   useEffect(() => {
     const animate = () => {
       const ctx = canvasRef.current.getContext('2d');
@@ -208,6 +228,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     animate();
   }, []);
 
+  // Expose canvas clearing function
   useImperativeHandle(ref, () => ({
     clearCanvas: () => {
       canvasRef.current.getContext('2d').clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
