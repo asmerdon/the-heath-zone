@@ -9,12 +9,53 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
   const activeDrips = useRef([]);
   const strokeColor = useRef(null);
   const currentLine = useRef([]);
+  const firstPoint = useRef(null);
+  const globalFirstPoint = useRef(null);
 
   const getRandomColor = () => {
     const hue = 180 + Math.random() * 40;
     const sat = 80 + Math.random() * 15;
     const light = 45 + Math.random() * 15;
     return `hsl(${hue}, ${sat}%, ${light}%)`;
+  };
+
+  const drawFlag = (ctx, x, y) => {
+    const flagHeight = 30;
+    const flagWidth = 20;
+    
+    const offsetX = 10;
+    const offsetY = 10;
+    const flagX = x + offsetX;
+    const flagY = y - offsetY;
+    
+    ctx.save();
+    
+    ctx.beginPath();
+    ctx.moveTo(flagX, flagY);
+    ctx.lineTo(flagX, flagY - flagHeight);
+    ctx.strokeStyle = '#11C3DB';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(flagX, flagY - flagHeight);
+    ctx.lineTo(flagX + flagWidth, flagY - flagHeight + flagWidth/2);
+    ctx.lineTo(flagX, flagY - flagHeight + flagWidth);
+    ctx.fillStyle = '#11C3DB';
+    ctx.fill();
+    
+    if (globalFirstPoint.current) {
+      globalFirstPoint.current = { x: flagX, y: flagY };
+    }
+    
+    ctx.restore();
+  };
+
+  const updateFlag = () => {
+    if (!globalFirstPoint.current) return;
+    
+    const ctx = canvasRef.current.getContext('2d');
+    drawFlag(ctx, globalFirstPoint.current.x, globalFirstPoint.current.y);
   };
 
   useEffect(() => {
@@ -27,6 +68,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
           ref.current.height = h;
         }
       });
+      updateFlag();
     };
 
     resize();
@@ -97,10 +139,24 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
   };
 
   const handlePointerDown = (e) => {
+    const x = e.clientX;
+    const y = e.clientY;
     setIsDrawing(true);
-    setHoldData({ x: e.clientX, y: e.clientY, time: Date.now() });
+    setHoldData({ x, y, time: Date.now() });
     strokeColor.current = getRandomColor();
     currentLine.current = [];
+    firstPoint.current = { x, y };
+
+    // Only set globalFirstPoint and draw flag if this is the first line
+    if (!globalFirstPoint.current) {
+      // Offset the spawn point slightly to better align with the line
+      globalFirstPoint.current = { 
+        x: x + 10, // Move spawn point right
+        y: y - 5   // Move spawn point up
+      };
+      const ctx = canvasRef.current.getContext('2d');
+      drawFlag(ctx, x, y);
+    }
   };
 
   const handlePointerUp = () => {
@@ -109,8 +165,9 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     setHoldData(null);
 
     if (currentLine.current.length > 0 && onLineDrawn) {
-      onLineDrawn(currentLine.current);
+      onLineDrawn(currentLine.current, globalFirstPoint.current);
       currentLine.current = [];
+      firstPoint.current = null;
     }
   };
 
@@ -159,8 +216,10 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
       trailCanvasRef.current.getContext('2d').clearRect(0, 0, trailCanvasRef.current.width, trailCanvasRef.current.height);
       activeDrips.current = [];
       currentLine.current = [];
+      firstPoint.current = null;
+      globalFirstPoint.current = null;
       if (onLineDrawn) {
-        onLineDrawn([]);
+        onLineDrawn([], null);
       }
     }
   }));

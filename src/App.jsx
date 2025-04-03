@@ -174,7 +174,7 @@ export default function App() {
       <MarbleGame ref={marbleGameRef} />
       <CanvasDraw 
         ref={canvasRef} 
-        onLineDrawn={(lines) => marbleGameRef.current?.handleNewLines(lines)}
+        onLineDrawn={(lines, spawnPoint) => marbleGameRef.current?.handleNewLines(lines, spawnPoint)}
       />
     </>
   );
