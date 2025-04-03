@@ -3,6 +3,7 @@ import WindowFrame from './components/WindowFrame';
 import Taskbar from './components/Taskbar';
 import MediaExplorer from './components/MediaExplorer';
 import MediaViewer from './components/MediaViewer';
+import MarbleGame from './components/MarbleGame';
 import { artworkCollections } from './collections/artwork';
 import { photographyCollections } from './collections/photography';
 import './App.css';
@@ -15,6 +16,7 @@ export default function App() {
   const [showPhotography, setShowPhotography] = useState(false);
   const [viewerData, setViewerData] = useState(null);
   const canvasRef = useRef();
+  const marbleGameRef = useRef();
 
   // Custom cursor logic
   useEffect(() => {
@@ -42,6 +44,12 @@ export default function App() {
   const handleClearCanvas = () => {
     if (canvasRef.current) {
       canvasRef.current.clearCanvas();
+    }
+  };
+
+  const handleSpawnMarble = () => {
+    if (marbleGameRef.current) {
+      marbleGameRef.current.spawnMarble();
     }
   };
 
@@ -110,6 +118,7 @@ export default function App() {
         onClear={handleClearCanvas}
         onShowSplash={() => setShowSplash(true)}
         onToggleBackground={() => setShowBackground((prev) => !prev)}
+        onSpawnMarble={handleSpawnMarble}
       />
 
       {/* Splash window as draggable Aero-style panel */}
@@ -162,6 +171,7 @@ export default function App() {
         />
       )}
 
+      <MarbleGame ref={marbleGameRef} />
       <CanvasDraw ref={canvasRef} />
     </>
   );

@@ -1,20 +1,25 @@
 import WindowFrame from './WindowFrame';
 import { useState, useEffect, useCallback } from 'react';
+import { getNextZIndex } from '../zIndexManager';
 
 export default function MediaViewer({ items, startIndex, onClose }) {
   const [index, setIndex] = useState(startIndex);
+  const [currentZ, setCurrentZ] = useState(getNextZIndex());
 
-  // Reset index when items change
+  // Reset index when items change and bring to front
   useEffect(() => {
     setIndex(startIndex);
+    setCurrentZ(getNextZIndex());
   }, [items, startIndex]);
 
   const prevItem = useCallback(() => {
     setIndex((prev) => (prev - 1 + items.length) % items.length);
+    setCurrentZ(getNextZIndex());
   }, [items]);
 
   const nextItem = useCallback(() => {
     setIndex((prev) => (prev + 1) % items.length);
+    setCurrentZ(getNextZIndex());
   }, [items]);
 
   // Add keyboard navigation with proper cleanup
@@ -54,6 +59,7 @@ export default function MediaViewer({ items, startIndex, onClose }) {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        zIndex: currentZ,
       }}
     >
       <div

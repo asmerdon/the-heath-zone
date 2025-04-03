@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Taskbar({ onClear, onShowSplash, onToggleBackground }) {
+export default function Taskbar({ onClear, onShowSplash, onToggleBackground, onSpawnMarble }) {
   return (
     <div
       style={{
@@ -21,6 +21,7 @@ export default function Taskbar({ onClear, onShowSplash, onToggleBackground }) {
       className="ui-block"
     >
       <button className="glass-button" onClick={onShowSplash}>About</button>
+      <button className="glass-button" onClick={onSpawnMarble}>Spawn Marble</button>
       <button className="glass-button" onClick={onToggleBackground}>Toggle BG</button>
       <button className="glass-button" onClick={onClear}>Clear</button>
     </div>
