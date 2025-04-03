@@ -1,6 +1,6 @@
 import { useEffect, useRef, useImperativeHandle, forwardRef, useState } from 'react';
 
-const CanvasDraw = forwardRef((_, ref) => {
+const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
   const canvasRef = useRef(null);
   const trailCanvasRef = useRef(null);
   const prevPoint = useRef(null);
@@ -8,6 +8,7 @@ const CanvasDraw = forwardRef((_, ref) => {
   const [holdData, setHoldData] = useState(null);
   const activeDrips = useRef([]);
   const strokeColor = useRef(null);
+  const currentLine = useRef([]);
 
   const getRandomColor = () => {
     const hue = 180 + Math.random() * 40;
@@ -50,6 +51,15 @@ const CanvasDraw = forwardRef((_, ref) => {
       drawCtx.shadowColor = 'rgba(255,255,255,0.25)';
       drawCtx.shadowBlur = 2;
       drawCtx.stroke();
+
+      currentLine.current.push({
+        x1: prevPoint.current.x,
+        y1: prevPoint.current.y,
+        x2: x,
+        y2: y,
+        width: 10,
+        color: strokeColor.current
+      });
     } else if (!isDrawing && prevPoint.current) {
       const dx = x - prevPoint.current.x;
       const dy = y - prevPoint.current.y;
@@ -90,12 +100,18 @@ const CanvasDraw = forwardRef((_, ref) => {
     setIsDrawing(true);
     setHoldData({ x: e.clientX, y: e.clientY, time: Date.now() });
     strokeColor.current = getRandomColor();
+    currentLine.current = [];
   };
 
   const handlePointerUp = () => {
     setIsDrawing(false);
     prevPoint.current = null;
     setHoldData(null);
+
+    if (currentLine.current.length > 0 && onLineDrawn) {
+      onLineDrawn(currentLine.current);
+      currentLine.current = [];
+    }
   };
 
   useEffect(() => {
@@ -142,6 +158,10 @@ const CanvasDraw = forwardRef((_, ref) => {
       canvasRef.current.getContext('2d').clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       trailCanvasRef.current.getContext('2d').clearRect(0, 0, trailCanvasRef.current.width, trailCanvasRef.current.height);
       activeDrips.current = [];
+      currentLine.current = [];
+      if (onLineDrawn) {
+        onLineDrawn([]);
+      }
     }
   }));
 

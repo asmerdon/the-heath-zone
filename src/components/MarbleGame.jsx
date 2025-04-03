@@ -9,6 +9,60 @@ const MarbleGame = forwardRef((props, ref) => {
   const linesRef = useRef([]); // Store line segments for physics
   const marblesRef = useRef([]); // Store marble bodies
 
+  // Function to convert a line segment to a physics body
+  const createLineBody = (line) => {
+    const thickness = line.width;
+    const length = Math.sqrt(
+      Math.pow(line.x2 - line.x1, 2) + Math.pow(line.y2 - line.y1, 2)
+    );
+    
+    if (length < 5) return null; // Skip very short lines
+
+    // Calculate center point
+    const centerX = (line.x1 + line.x2) / 2;
+    const centerY = (line.y1 + line.y2) / 2;
+
+    // Calculate angle
+    const angle = Math.atan2(line.y2 - line.y1, line.x2 - line.x1);
+
+    // Create the line body
+    return Matter.Bodies.rectangle(centerX, centerY, length, thickness, {
+      isStatic: true,
+      angle: angle,
+      render: {
+        fillStyle: line.color,
+        strokeStyle: line.color,
+        lineWidth: 0
+      },
+      friction: 0.1,
+      restitution: 0.5
+    });
+  };
+
+  // Function to handle new line segments
+  const handleNewLines = (lines) => {
+    const engine = engineRef.current;
+    if (!engine) return;
+
+    // If lines is empty, clear all existing lines
+    if (lines.length === 0) {
+      linesRef.current.forEach(line => {
+        Matter.World.remove(engine.world, line);
+      });
+      linesRef.current = [];
+      return;
+    }
+
+    // Convert new lines to physics bodies
+    const bodies = lines
+      .map(createLineBody)
+      .filter(body => body !== null);
+
+    // Add new bodies to the world
+    Matter.World.add(engine.world, bodies);
+    linesRef.current.push(...bodies);
+  };
+
   useEffect(() => {
     // Initialize Matter.js engine with higher precision
     const engine = Matter.Engine.create({
@@ -128,7 +182,8 @@ const MarbleGame = forwardRef((props, ref) => {
 
       // Run cleanup periodically
       setTimeout(cleanup, 5000);
-    }
+    },
+    handleNewLines // Expose the line handling function
   }));
 
   return (

@@ -172,7 +172,10 @@ export default function App() {
       )}
 
       <MarbleGame ref={marbleGameRef} />
-      <CanvasDraw ref={canvasRef} />
+      <CanvasDraw 
+        ref={canvasRef} 
+        onLineDrawn={(lines) => marbleGameRef.current?.handleNewLines(lines)}
+      />
     </>
   );
 }
