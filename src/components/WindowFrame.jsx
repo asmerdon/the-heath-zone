@@ -1,27 +1,48 @@
 import { useRef, useState, useEffect } from 'react';
 import { getNextZIndex } from '../zIndexManager';
 
-export default function WindowFrame({ title, children, onClose, defaultPosition, style = {} }) {
+export default function WindowFrame({ title, children, onClose, defaultPosition, style = {}, onPositionChange }) {
   const windowRef = useRef();
   const [position, setPosition] = useState(defaultPosition || { x: 100, y: 100 });
+  const [size, setSize] = useState({ width: 0, height: 0 });
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [currentZ, setCurrentZ] = useState(getNextZIndex());
 
-  const [currentZ, setCurrentZ] = useState(getNextZIndex()); // ✨ this is new
+  // Track window size
+  useEffect(() => {
+    const updateSize = () => {
+      if (windowRef.current) {
+        const rect = windowRef.current.getBoundingClientRect();
+        setSize({ width: rect.width, height: rect.height });
+      }
+    };
+
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, [position, title]);
 
   const handleMouseDown = (e) => {
     const rect = windowRef.current.getBoundingClientRect();
     setOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
     setDragging(true);
-    setCurrentZ(getNextZIndex()); // ✨ this brings it to front
+    setCurrentZ(getNextZIndex());
   };
-
 
   const handleMouseMove = (e) => {
     if (dragging) {
-      setPosition({
+      const newPosition = {
         x: e.clientX - offset.x,
         y: e.clientY - offset.y
+      };
+      setPosition(newPosition);
+      // Notify parent of position update
+      onPositionChange?.({ 
+        ...newPosition, 
+        width: size.width, 
+        height: size.height,
+        id: title
       });
     }
   };
@@ -43,6 +64,13 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
     };
   }, [dragging]);
 
+  // Notify parent when window is unmounted
+  useEffect(() => {
+    return () => {
+      onPositionChange?.({ id: title, removed: true });
+    };
+  }, [title]);
+
   return (
     <div
       ref={windowRef}
@@ -60,10 +88,9 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
         color: 'white',
         zIndex: currentZ,
         boxShadow: '0 4px 30px rgba(0,0,0,0.2)',
-        ...style, // 👈 This allows ImageViewer to control width/height
+        ...style,
       }}
     >
-
       <div
         className="window-titlebar"
         style={{

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import WindowFrame from './WindowFrame';
 
-export default function MediaExplorer({ title, collections, onClose, onOpenImage, defaultPosition }) {
+export default function MediaExplorer({ title, collections, onClose, onOpenImage, defaultPosition, onPositionChange }) {
   const [selectedCollection, setSelectedCollection] = useState(null);
 
   return (
@@ -9,6 +9,7 @@ export default function MediaExplorer({ title, collections, onClose, onOpenImage
       title={selectedCollection ? selectedCollection.name : title}
       onClose={onClose}
       defaultPosition={defaultPosition || { x: 350, y: 350 }}
+      onPositionChange={onPositionChange}
     >
       {!selectedCollection ? (
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem' }}>

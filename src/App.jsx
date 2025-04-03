@@ -127,6 +127,7 @@ export default function App() {
           title="About"
           onClose={() => setShowSplash(false)}
           defaultPosition={{ x: window.innerWidth / 2 - 275, y: window.innerHeight / 2 - 150 }}
+          onPositionChange={(update) => marbleGameRef.current?.handleWindowUpdate(update)}
         >
           <div className="ui-window" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h2 style={{ margin: '0 0 0.5rem' }}>The Heath Zone</h2>
@@ -150,6 +151,7 @@ export default function App() {
           onClose={() => setShowArtwork(false)}
           onOpenImage={(images, index) => setViewerData({ images, index })}
           defaultPosition={{ x: 350, y: 350 }}
+          onPositionChange={(update) => marbleGameRef.current?.handleWindowUpdate(update)}
         />
       )}
 
@@ -160,6 +162,7 @@ export default function App() {
           onClose={() => setShowPhotography(false)}
           onOpenImage={(images, index) => setViewerData({ images, index })}
           defaultPosition={{ x: 450, y: 450 }}
+          onPositionChange={(update) => marbleGameRef.current?.handleWindowUpdate(update)}
         />
       )}
 
@@ -168,6 +171,7 @@ export default function App() {
           items={viewerData.images}
           startIndex={viewerData.index}
           onClose={() => setViewerData(null)}
+          onPositionChange={(update) => marbleGameRef.current?.handleWindowUpdate(update)}
         />
       )}
 

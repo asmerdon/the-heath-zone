@@ -1,7 +1,7 @@
 import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import Matter from 'matter-js';
 
-const MarbleGame = forwardRef((props, ref) => {
+const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
   const sceneRef = useRef(null);
   const engineRef = useRef(null);
   const renderRef = useRef(null);
@@ -9,6 +9,7 @@ const MarbleGame = forwardRef((props, ref) => {
   const linesRef = useRef([]); // Store line segments for physics
   const marblesRef = useRef([]); // Store marble bodies
   const spawnPointRef = useRef(null);
+  const windowBodiesRef = useRef(new Map()); // Store window physics bodies
 
   // Function to convert a line segment to a physics body
   const createLineBody = (line) => {
@@ -68,6 +69,44 @@ const MarbleGame = forwardRef((props, ref) => {
     // Add new bodies to the world
     Matter.World.add(engine.world, bodies);
     linesRef.current.push(...bodies);
+  };
+
+  // Function to create or update a window physics body
+  const handleWindowUpdate = ({ id, x, y, width, height, removed }) => {
+    const engine = engineRef.current;
+    if (!engine) return;
+
+    // Remove existing body if it exists
+    const existingBody = windowBodiesRef.current.get(id);
+    if (existingBody) {
+      Matter.World.remove(engine.world, existingBody);
+      windowBodiesRef.current.delete(id);
+    }
+
+    // If window was removed, we're done
+    if (removed) return;
+
+    // Create new body for window
+    const body = Matter.Bodies.rectangle(
+      x + width / 2,  // Center position
+      y + height / 2,
+      width,
+      height,
+      {
+        isStatic: true,
+        render: {
+          fillStyle: 'rgba(255, 255, 255, 0.0)',
+          strokeStyle: 'rgba(255, 255, 255, 0.0)',
+          lineWidth: 0
+        },
+        chamfer: { radius: 10 }, // Rounded corners
+        friction: 0.1,
+        restitution: 0.7
+      }
+    );
+
+    Matter.World.add(engine.world, body);
+    windowBodiesRef.current.set(id, body);
   };
 
   useEffect(() => {
@@ -206,7 +245,8 @@ const MarbleGame = forwardRef((props, ref) => {
         }
       }, 10000); // Increased timeout to allow for longer falls
     },
-    handleNewLines
+    handleNewLines,
+    handleWindowUpdate // Expose window update function
   }));
 
   return (
