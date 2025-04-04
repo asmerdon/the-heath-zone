@@ -1,6 +1,15 @@
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 
 const Background = memo(({ showBackground }) => {
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+
+  // Reset video loaded state when toggling background
+  useEffect(() => {
+    if (!showBackground) {
+      setIsVideoLoaded(false);
+    }
+  }, [showBackground]);
+
   return (
     <>
       <div
@@ -14,7 +23,7 @@ const Background = memo(({ showBackground }) => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           zIndex: -2,
-          opacity: showBackground ? 0 : 1,
+          opacity: showBackground && isVideoLoaded ? 0 : 1,
           transition: 'opacity 0.5s ease',
           pointerEvents: 'none',
         }}
@@ -27,7 +36,7 @@ const Background = memo(({ showBackground }) => {
           width: '100vw',
           height: '100vh',
           zIndex: -2,
-          opacity: showBackground ? 1 : 0,
+          opacity: showBackground && isVideoLoaded ? 1 : 0,
           transition: 'opacity 0.5s ease',
           pointerEvents: 'none',
         }}
@@ -38,6 +47,8 @@ const Background = memo(({ showBackground }) => {
           muted
           playsInline
           src="bg-loop.mkv"
+          onLoadedData={() => setIsVideoLoaded(true)}
+          onError={() => setIsVideoLoaded(false)}
           style={{
             position: 'absolute',
             top: 0,
