@@ -1,17 +1,11 @@
-import { memo, useState, useEffect } from 'react';
+import { memo, useState } from 'react';
 
 const Background = memo(({ showBackground }) => {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
-  // Reset video loaded state when toggling background
-  useEffect(() => {
-    if (!showBackground) {
-      setIsVideoLoaded(false);
-    }
-  }, [showBackground]);
-
   return (
     <>
+      {/* Static Background */}
       <div
         style={{
           position: 'fixed',
@@ -23,11 +17,12 @@ const Background = memo(({ showBackground }) => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           zIndex: -2,
-          opacity: showBackground && isVideoLoaded ? 0 : 1,
+          opacity: showBackground ? 0 : 1,
           transition: 'opacity 0.5s ease',
           pointerEvents: 'none',
         }}
       />
+      {/* Video Background */}
       <div
         style={{
           position: 'fixed',
@@ -36,7 +31,7 @@ const Background = memo(({ showBackground }) => {
           width: '100vw',
           height: '100vh',
           zIndex: -2,
-          opacity: showBackground && isVideoLoaded ? 1 : 0,
+          opacity: showBackground ? 1 : 0,
           transition: 'opacity 0.5s ease',
           pointerEvents: 'none',
         }}
@@ -56,9 +51,27 @@ const Background = memo(({ showBackground }) => {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
+            opacity: isVideoLoaded ? 1 : 0,
+            transition: 'opacity 0.5s ease',
           }}
         />
+        {/* Show static background while video loads */}
+        {!isVideoLoaded && showBackground && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundImage: 'url(background.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+        )}
       </div>
+      {/* Mist Overlay */}
       <div
         style={{
           position: 'fixed',
