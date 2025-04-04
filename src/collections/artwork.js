@@ -5,20 +5,20 @@ export const artworkCollections = [
     items: [
       {
         type: 'image',
-        url: '/artwork/into-the-light/1.png'
+        url: 'artwork/into-the-light/1.png'
       },
       {
         type: 'image',
-        url: '/artwork/into-the-light/2.png'
+        url: 'artwork/into-the-light/2.png'
       },
       {
         type: 'image',
-        url: '/artwork/into-the-light/3.png'
+        url: 'artwork/into-the-light/3.png'
       },
       {
         type: 'video',
-        url: '/artwork/into-the-light/4.mp4',
-        thumbnail: '/artwork/into-the-light/1.png'
+        url: 'artwork/into-the-light/4.mp4',
+        thumbnail: 'artwork/into-the-light/1.png'
       }
     ]
   },

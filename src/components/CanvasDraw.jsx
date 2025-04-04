@@ -13,6 +13,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
   const currentLine = useRef([]);
   const firstPoint = useRef(null);
   const globalFirstPoint = useRef(null);
+  const drawnLines = useRef([]); // Store all drawn lines that have been converted to physics
 
   // Generate random color in cyan/blue hue range
   const getRandomColor = () => {
@@ -66,18 +67,56 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     drawFlag(ctx, globalFirstPoint.current.x, globalFirstPoint.current.y);
   };
 
+  // Redraw current lines
+  const redrawCurrentLines = () => {
+    if (!currentLine.current.length) return;
+    
+    const ctx = canvasRef.current.getContext('2d');
+    currentLine.current.forEach(line => {
+      ctx.beginPath();
+      ctx.moveTo(line.x1, line.y1);
+      ctx.lineTo(line.x2, line.y2);
+      ctx.strokeStyle = line.color;
+      ctx.lineWidth = line.width;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = 'rgba(255,255,255,0.25)';
+      ctx.shadowBlur = 2;
+      ctx.stroke();
+    });
+  };
+
   // Handle window resize
   useEffect(() => {
     const resize = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
       [canvasRef, trailCanvasRef].forEach(ref => {
         if (ref.current) {
-          ref.current.width = w;
-          ref.current.height = h;
+          // Set canvas size to match display size
+          const canvas = ref.current;
+          canvas.width = canvas.offsetWidth;
+          canvas.height = canvas.offsetHeight;
+          
+          // Update canvas style dimensions
+          canvas.style.width = '100%';
+          canvas.style.height = '100%';
         }
       });
       updateFlag();
+      
+      // Redraw all previously drawn lines
+      const ctx = canvasRef.current.getContext('2d');
+      drawnLines.current.forEach(line => {
+        ctx.beginPath();
+        ctx.moveTo(line.x1, line.y1);
+        ctx.lineTo(line.x2, line.y2);
+        ctx.strokeStyle = line.color;
+        ctx.lineWidth = line.width;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.shadowColor = 'rgba(255,255,255,0.25)';
+        ctx.shadowBlur = 2;
+        ctx.stroke();
+      });
     };
 
     resize();
@@ -87,8 +126,13 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
 
   // Handle pointer movement for drawing and effects
   const handlePointerMove = (e) => {
-    const x = e.clientX;
-    const y = e.clientY;
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    
+    // Get coordinates in canvas space
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
     const drawCtx = canvasRef.current.getContext('2d');
     const trailCtx = trailCanvasRef.current.getContext('2d');
 
@@ -155,8 +199,13 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
 
   // Start drawing on pointer down
   const handlePointerDown = (e) => {
-    const x = e.clientX;
-    const y = e.clientY;
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    
+    // Get coordinates in canvas space
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
     setIsDrawing(true);
     setHoldData({ x, y, time: Date.now() });
     strokeColor.current = getRandomColor();
@@ -181,6 +230,8 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     setHoldData(null);
 
     if (currentLine.current.length > 0 && onLineDrawn) {
+      // Store the lines before clearing them
+      drawnLines.current.push(...currentLine.current);
       onLineDrawn(currentLine.current, globalFirstPoint.current);
       currentLine.current = [];
       firstPoint.current = null;
@@ -235,6 +286,7 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
       trailCanvasRef.current.getContext('2d').clearRect(0, 0, trailCanvasRef.current.width, trailCanvasRef.current.height);
       activeDrips.current = [];
       currentLine.current = [];
+      drawnLines.current = []; // Clear stored lines
       firstPoint.current = null;
       globalFirstPoint.current = null;
       if (onLineDrawn) {

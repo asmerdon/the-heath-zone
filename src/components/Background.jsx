@@ -10,7 +10,7 @@ const Background = memo(({ showBackground }) => {
           left: 0,
           width: '100vw',
           height: '100vh',
-          backgroundImage: 'url(/background.png)',
+          backgroundImage: 'url(background.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           zIndex: -2,
@@ -37,7 +37,7 @@ const Background = memo(({ showBackground }) => {
           loop
           muted
           playsInline
-          src="/bg-loop.mkv"
+          src="bg-loop.mkv"
           style={{
             position: 'absolute',
             top: 0,

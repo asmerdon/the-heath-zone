@@ -131,7 +131,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
         height: window.innerHeight,
         wireframes: false,
         background: 'transparent',
-        pixelRatio: 'auto'
+        pixelRatio: window.devicePixelRatio || 1
       }
     });
     renderRef.current = render;
@@ -169,10 +169,33 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
 
     // Handle window resize
     const handleResize = () => {
-      render.options.width = window.innerWidth;
-      render.options.height = window.innerHeight;
-      render.canvas.width = window.innerWidth;
-      render.canvas.height = window.innerHeight;
+      const canvas = render.canvas;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      
+      // Update render bounds
+      render.bounds.max.x = width;
+      render.bounds.max.y = height;
+      
+      // Update canvas size
+      canvas.width = width;
+      canvas.height = height;
+      
+      // Update canvas style
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      
+      // Update wall positions
+      const walls = engine.world.bodies.filter(body => body.isStatic && !windowBodiesRef.current.has(body.id));
+      walls.forEach(wall => {
+        if (wall.position.x < 0) { // Left wall
+          Matter.Body.setPosition(wall, { x: -50, y: height / 2 });
+          Matter.Body.setVertices(wall, Matter.Bodies.rectangle(-50, height / 2, 100, height).vertices);
+        } else if (wall.position.x > width) { // Right wall
+          Matter.Body.setPosition(wall, { x: width + 50, y: height / 2 });
+          Matter.Body.setVertices(wall, Matter.Bodies.rectangle(width + 50, height / 2, 100, height).vertices);
+        }
+      });
     };
     window.addEventListener('resize', handleResize);
 

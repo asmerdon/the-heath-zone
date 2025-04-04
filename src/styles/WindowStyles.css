@@ -10,10 +10,6 @@
   transition: transform 0.1s ease;
 }
 
-.window-frame:active {
-  transform: scale(1.002);
-}
-
 .window-titlebar {
   display: flex;
   justify-content: space-between;
