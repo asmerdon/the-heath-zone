@@ -86,17 +86,34 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     });
   };
 
-  // Handle window resize
+  // Initialize canvas size
   useEffect(() => {
-    const resize = () => {
+    const initializeCanvas = () => {
       [canvasRef, trailCanvasRef].forEach(ref => {
         if (ref.current) {
-          // Set canvas size to match display size
           const canvas = ref.current;
-          canvas.width = canvas.offsetWidth;
-          canvas.height = canvas.offsetHeight;
-          
-          // Update canvas style dimensions
+          // Set canvas size to match window dimensions
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          // Set display size
+          canvas.style.width = '100%';
+          canvas.style.height = '100%';
+        }
+      });
+    };
+
+    // Initialize immediately
+    initializeCanvas();
+  }, []); // Empty dependency array for initialization
+
+  // Handle window resize separately
+  useEffect(() => {
+    const handleResize = () => {
+      [canvasRef, trailCanvasRef].forEach(ref => {
+        if (ref.current) {
+          const canvas = ref.current;
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
           canvas.style.width = '100%';
           canvas.style.height = '100%';
         }
@@ -119,9 +136,8 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
       });
     };
 
-    resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Handle pointer movement for drawing and effects
