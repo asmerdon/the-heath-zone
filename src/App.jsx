@@ -83,8 +83,8 @@ export default function App() {
   // Memoized splash window content
   const splashContent = useMemo(() => (
     <div className="ui-window" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <h2 style={{ margin: '0 0 0.5rem' }}>The Heath Zone</h2>
-      <p style={{ marginBottom: '1.5rem' }}>artist based in se london</p>
+      <h2 className="window-title">The Heath Zone</h2>
+      <p style={{ marginBottom: '1.5rem', opacity: 0.9 }}>artist based in se london</p>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
         <a onClick={() => handleOpenWindow(setShowArtwork)} className="glass-button">Artwork</a>
