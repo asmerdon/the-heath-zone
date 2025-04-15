@@ -13,6 +13,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
   const spawnPointRef = useRef(null);
   const windowBodiesRef = useRef(new Map()); // Store window physics bodies
   const MAX_MARBLES = 50; // Maximum number of marbles allowed at once
+  const wallsRef = useRef([]); // Store wall references
 
   // Convert a line segment to a Matter.js physics body
   const createLineBody = (line) => {
@@ -148,11 +149,13 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
       restitution: 0.8
     };
 
-    // Create side walls only (no bottom)
-    const walls = [
-      Matter.Bodies.rectangle(-50, window.innerHeight / 2, 100, window.innerHeight, wallOptions), // left
-      Matter.Bodies.rectangle(window.innerWidth + 50, window.innerHeight / 2, 100, window.innerHeight, wallOptions), // right
-    ];
+    // Create side walls
+    const leftWall = Matter.Bodies.rectangle(-50, window.innerHeight / 2, 100, window.innerHeight, wallOptions);
+    const rightWall = Matter.Bodies.rectangle(window.innerWidth + 50, window.innerHeight / 2, 100, window.innerHeight, wallOptions);
+    
+    // Store wall references
+    const walls = [leftWall, rightWall];
+    wallsRef.current = walls;
 
     Matter.World.add(engine.world, walls);
 
@@ -185,15 +188,26 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
       canvas.style.width = '100%';
       canvas.style.height = '100%';
       
-      // Update wall positions
-      const walls = engine.world.bodies.filter(body => body.isStatic && !windowBodiesRef.current.has(body.id));
-      walls.forEach(wall => {
-        if (wall.position.x < 0) { // Left wall
-          Matter.Body.setPosition(wall, { x: -50, y: height / 2 });
-          Matter.Body.setVertices(wall, Matter.Bodies.rectangle(-50, height / 2, 100, height).vertices);
-        } else if (wall.position.x > width) { // Right wall
-          Matter.Body.setPosition(wall, { x: width + 50, y: height / 2 });
-          Matter.Body.setVertices(wall, Matter.Bodies.rectangle(width + 50, height / 2, 100, height).vertices);
+      // Remove old walls
+      if (wallsRef.current) {
+        Matter.World.remove(engine.world, wallsRef.current);
+      }
+
+      // Create new walls with current dimensions
+      const leftWall = Matter.Bodies.rectangle(-50, height / 2, 100, height, wallOptions);
+      const rightWall = Matter.Bodies.rectangle(width + 50, height / 2, 100, height, wallOptions);
+      
+      // Update wall references
+      wallsRef.current = [leftWall, rightWall];
+      
+      // Add new walls to world
+      Matter.World.add(engine.world, wallsRef.current);
+
+      // Clean up marbles that fall off screen
+      marblesRef.current.forEach(marble => {
+        if (marble.position.y > height + 100) {
+          Matter.World.remove(engine.world, marble);
+          marblesRef.current = marblesRef.current.filter(m => m !== marble);
         }
       });
     };
