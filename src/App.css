@@ -226,3 +226,8 @@ a:focus-visible {
   box-shadow: none !important;
 }
 
+/* Update button hover styles */
+button:hover {
+  border-color: transparent;
+}
+
