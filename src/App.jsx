@@ -84,14 +84,14 @@ export default function App() {
   const splashContent = useMemo(() => (
     <div className="ui-window" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <h2 className="window-title">The Heath Zone</h2>
-      <p style={{ marginBottom: '1.5rem', opacity: 0.9 }}>artist based in se london</p>
+      <p style={{ marginBottom: '1.5rem', opacity: 0.9 }}>you are officially in the zone</p>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
         <a onClick={() => handleOpenWindow(setShowArtwork)} className="glass-button">Artwork</a>
         <a onClick={() => handleOpenWindow(setShowPhotography)} className="glass-button">Photography</a>
         <a href="https://soundcloud.com/user-952972706" target="_blank" rel="noopener noreferrer" className="glass-button">Beats</a>
         <a href="https://www.mixcloud.com/Altwych/" target="_blank" rel="noopener noreferrer" className="glass-button">Radio Show</a>
-        <a href="https://www.are.na/the-heath/channels" target="_blank" rel="noopener noreferrer" className="glass-button">Are.na</a>
+        {/* <a href="https://www.are.na/the-heath/channels" target="_blank" rel="noopener noreferrer" className="glass-button">Are.na</a> */}
       </div>
     </div>
   ), []);

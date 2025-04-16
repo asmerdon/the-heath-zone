@@ -1,5 +1,5 @@
 export const photographyCollections = [
-  {
+  /*{
     name: 'Collection 2',
     description: 'Work in progress collection.',
     items: [
@@ -44,5 +44,5 @@ export const photographyCollections = [
         url: 'photos/collection2/10.jpg'
       }
     ]
-  }
+  }*/
 ]; 
