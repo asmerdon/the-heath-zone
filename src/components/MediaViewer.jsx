@@ -97,7 +97,10 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
       onPositionChange={onPositionChange}
       style={windowStyle}
     >
-      <div className="media-viewer">
+      <div 
+        className="media-viewer"
+        onMouseDown={() => setCurrentZ(getNextZIndex())}
+      >
         <div className="media-content">
           {isLoading && currentItem.type === 'image' && (
             <div className="loading-indicator">Loading...</div>

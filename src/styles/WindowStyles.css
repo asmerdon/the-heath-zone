@@ -80,6 +80,7 @@
   overflow: hidden;
   border-radius: 8px;
   padding: 0.5rem;
+  position: relative;
 }
 
 .media-content {
@@ -89,6 +90,7 @@
   justify-content: center;
   align-items: center;
   padding: 1rem;
+  position: relative;
 }
 
 .media-image,
@@ -99,6 +101,7 @@
   border-radius: 12px;
   box-shadow: 0 0 12px rgba(0,0,0,0.2);
   transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .media-controls {
@@ -106,6 +109,7 @@
   justify-content: center;
   gap: 1rem;
   padding-bottom: 1rem;
+  position: relative;
 }
 
 .nav-button {

@@ -71,11 +71,22 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
 
   const handleMouseMove = useCallback((e) => {
     if (dragging) {
-      const newPosition = {
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y
-      };
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      const windowWidth = size.width;
+      const windowHeight = size.height;
+
+      // Calculate new position
+      let newX = e.clientX - offset.x;
+      let newY = e.clientY - offset.y;
+
+      // Constrain to screen bounds
+      newX = Math.max(0, Math.min(newX, screenWidth - windowWidth));
+      newY = Math.max(0, Math.min(newY, screenHeight - windowHeight));
+
+      const newPosition = { x: newX, y: newY };
       setPosition(newPosition);
+      
       // Notify parent of position update
       onPositionChange?.({ 
         ...newPosition, 
@@ -104,6 +115,41 @@ export default function WindowFrame({ title, children, onClose, defaultPosition,
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [dragging, handleMouseMove, handleMouseUp]);
+
+  // Add resize observer
+  useEffect(() => {
+    if (!windowRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      if (windowRef.current) {
+        const rect = windowRef.current.getBoundingClientRect();
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+
+        // Update size
+        const newSize = { width: rect.width, height: rect.height };
+        setSize(newSize);
+
+        // Constrain position if window is too large
+        const newX = Math.max(0, Math.min(position.x, screenWidth - rect.width));
+        const newY = Math.max(0, Math.min(position.y, screenHeight - rect.height));
+
+        if (newX !== position.x || newY !== position.y) {
+          const newPosition = { x: newX, y: newY };
+          setPosition(newPosition);
+          onPositionChange?.({
+            ...newPosition,
+            width: rect.width,
+            height: rect.height,
+            id: title
+          });
+        }
+      }
+    });
+
+    observer.observe(windowRef.current);
+    return () => observer.disconnect();
+  }, [position.x, position.y, title, onPositionChange]);
 
   return (
     <div
