@@ -127,20 +127,33 @@ const MarbleGame = forwardRef(({ onWindowUpdate, size }, ref) => {
     engine.world.gravity.y = 1;
     engine.world.gravity.scale = 0.0008;
 
-    const wallOptions = {
-      isStatic: true,
-      render: { visible: false },
-      friction: 0,
-      restitution: 0.8
+    const createWalls = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const wallThickness = 60;
+
+      // Remove existing walls if any
+      if (wallsRef.current) {
+        Matter.World.remove(engine.world, wallsRef.current);
+      }
+
+      const walls = [
+        Matter.Bodies.rectangle( // Left wall
+          -wallThickness/2, height/2, wallThickness, height * 2,
+          { isStatic: true, label: 'leftWall', render: { visible: false } }
+        ),
+        Matter.Bodies.rectangle( // Right wall
+          width + wallThickness/2, height/2, wallThickness, height * 2,
+          { isStatic: true, label: 'rightWall', render: { visible: false } }
+        )
+      ];
+
+      wallsRef.current = walls;
+      Matter.World.add(engine.world, walls);
     };
 
-    const leftWall = Matter.Bodies.rectangle(-50, window.innerHeight / 2, 100, window.innerHeight, wallOptions);
-    const rightWall = Matter.Bodies.rectangle(window.innerWidth + 50, window.innerHeight / 2, 100, window.innerHeight, wallOptions);
-    
-    const walls = [leftWall, rightWall];
-    wallsRef.current = walls;
-
-    Matter.World.add(engine.world, walls);
+    // Initial wall creation
+    createWalls();
 
     const runner = Matter.Runner.create({
       isFixed: true,
@@ -164,17 +177,11 @@ const MarbleGame = forwardRef(({ onWindowUpdate, size }, ref) => {
       
       canvas.style.width = '100%';
       canvas.style.height = '100%';
-      
-      if (wallsRef.current) {
-        Matter.World.remove(engine.world, wallsRef.current);
-      }
 
-      const leftWall = Matter.Bodies.rectangle(-50, height / 2, 100, height, wallOptions);
-      const rightWall = Matter.Bodies.rectangle(width + 50, height / 2, 100, height, wallOptions);
-      
-      wallsRef.current = [leftWall, rightWall];
-      Matter.World.add(engine.world, wallsRef.current);
+      // Update walls
+      createWalls();
 
+      // Clean up marbles that are out of bounds
       marblesRef.current.forEach(marble => {
         if (marble.position.y > height + 100) {
           Matter.World.remove(engine.world, marble);
@@ -182,60 +189,13 @@ const MarbleGame = forwardRef(({ onWindowUpdate, size }, ref) => {
         }
       });
     };
+
     window.addEventListener('resize', handleResize);
 
     return () => {
       Matter.Render.stop(render);
       Matter.Runner.stop(runner);
       Matter.Engine.clear(engine);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  // Create walls
-  useEffect(() => {
-    if (!engineRef.current) return;
-
-    const createWalls = () => {
-      // Remove existing walls if any
-      const existingWalls = engineRef.current.world.bodies.filter(body => 
-        ['leftWall', 'rightWall'].includes(body.label)
-      );
-      existingWalls.forEach(wall => Matter.World.remove(engineRef.current.world, wall));
-
-      // Get current dimensions
-      const width = sceneRef.current?.width || window.innerWidth;
-      const height = sceneRef.current?.height || window.innerHeight;
-
-      // Create new walls - only left and right
-      const wallThickness = 60;
-      const walls = [
-        Matter.Bodies.rectangle( // Left wall
-          -wallThickness/2, height/2, wallThickness, height * 2, // Double the height to account for scroll
-          { isStatic: true, label: 'leftWall' }
-        ),
-        Matter.Bodies.rectangle( // Right wall
-          width + wallThickness/2, height/2, wallThickness, height * 2, // Double the height to account for scroll
-          { isStatic: true, label: 'rightWall' }
-        )
-      ];
-
-      Matter.World.add(engineRef.current.world, walls);
-    };
-
-    createWalls();
-
-    const handleResize = () => {
-      if (sceneRef.current) {
-        const parent = sceneRef.current.parentElement;
-        sceneRef.current.width = parent.clientWidth;
-        sceneRef.current.height = parent.clientHeight;
-        createWalls();
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
