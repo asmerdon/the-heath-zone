@@ -245,6 +245,19 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
     prevPoint.current = null;
     setHoldData(null);
 
+    // If no line was drawn but we have a first point, create a small line
+    if (currentLine.current.length === 0 && firstPoint.current) {
+      const smallOffset = 5;  // Small enough to be almost invisible
+      currentLine.current.push({
+        x1: firstPoint.current.x,
+        y1: firstPoint.current.y,
+        x2: firstPoint.current.x + smallOffset,
+        y2: firstPoint.current.y - smallOffset,
+        width: 10,
+        color: strokeColor.current
+      });
+    }
+
     if (currentLine.current.length > 0 && onLineDrawn) {
       // Store the lines before clearing them
       drawnLines.current.push(...currentLine.current);

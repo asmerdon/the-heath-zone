@@ -241,17 +241,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
 
       // Get direction from first line segment
       const firstLine = linesRef.current[0];
-      if (!firstLine) return;
-
-      const vertices = firstLine.vertices;
       
-      // Calculate normalized direction vector
-      const dx = vertices[1].x - vertices[0].x;
-      const dy = vertices[1].y - vertices[0].y;
-      const length = Math.sqrt(dx * dx + dy * dy);
-      const dirX = dx / length;
-      const dirY = dy / length;
-
       // Create marble at spawn point
       const spawnHeight = 50;
       const spawnX = spawnPointRef.current.x;
@@ -275,13 +265,30 @@ const MarbleGame = forwardRef(({ onWindowUpdate }, ref) => {
         }
       });
 
-      // Set initial velocity with slight downward bias
-      const speed = 2;
-      const downwardBias = 0.2;
-      Matter.Body.setVelocity(marble, {
-        x: dirX * speed,
-        y: Math.max(0.1, dirY) * speed + downwardBias
-      });
+      if (firstLine) {
+        const vertices = firstLine.vertices;
+        
+        // Calculate normalized direction vector
+        const dx = vertices[1].x - vertices[0].x;
+        const dy = vertices[1].y - vertices[0].y;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const dirX = dx / length;
+        const dirY = dy / length;
+
+        // Set initial velocity with slight downward bias
+        const speed = 2;
+        const downwardBias = 0.2;
+        Matter.Body.setVelocity(marble, {
+          x: dirX * speed,
+          y: Math.max(0.1, dirY) * speed + downwardBias
+        });
+      } else {
+        // If no line, just drop straight down
+        Matter.Body.setVelocity(marble, {
+          x: 0,
+          y: 2
+        });
+      }
 
       Matter.World.add(engine.world, marble);
       marblesRef.current.push(marble);
