@@ -174,27 +174,10 @@ const CanvasDraw = forwardRef(({ onLineDrawn }, ref) => {
         width: 10,
         color: strokeColor.current
       });
-    } else if (!isDrawing && prevPoint.current) {
-      // Create trail effect when moving without drawing
-      const dx = x - prevPoint.current.x;
-      const dy = y - prevPoint.current.y;
-      const dist = Math.hypot(dx, dy);
-      const steps = Math.floor(dist / 2);
-      for (let i = 0; i < steps; i++) {
-        const t = i / steps;
-        const ix = prevPoint.current.x + dx * t;
-        const iy = prevPoint.current.y + dy * t;
-        const color = getRandomColor();
-        trailCtx.beginPath();
-        trailCtx.arc(ix, iy, 2, 0, 2 * Math.PI);
-        trailCtx.fillStyle = color;
-        trailCtx.fill();
-
-        // Fade out trail particles
-        setTimeout(() => {
-          trailCtx.clearRect(ix - 3, iy - 3, 6, 6);
-        }, 25);
-      }
+    }
+    // Trail effect is disabled but we keep the else-if structure
+    else if (!isDrawing && prevPoint.current) {
+      // No trail effect
     }
 
     // Handle drip effect when holding still
