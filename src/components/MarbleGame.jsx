@@ -12,7 +12,7 @@ const MarbleGame = forwardRef(({ onWindowUpdate, size }, ref) => {
   const marblesRef = useRef([]);
   const spawnPointRef = useRef(null);
   const windowBodiesRef = useRef(new Map());
-  const MAX_MARBLES = 50;
+  const MAX_MARBLES = 100;
   const wallsRef = useRef([]);
 
   // Convert a line segment to a Matter.js physics body

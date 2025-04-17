@@ -1,17 +1,14 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import WindowFrame from './WindowFrame';
-import { getNextZIndex } from '../zIndexManager';
 import '../styles/WindowStyles.css';
 
 export default function MediaViewer({ items, startIndex, onClose, onPositionChange }) {
   const [index, setIndex] = useState(startIndex);
-  const [currentZ, setCurrentZ] = useState(getNextZIndex());
   const [isLoading, setIsLoading] = useState(true);
 
-  // Reset index when items change and bring to front
+  // Reset index when items change
   useEffect(() => {
     setIndex(startIndex);
-    setCurrentZ(getNextZIndex());
   }, [items, startIndex]);
 
   // Preload next and previous images
@@ -45,12 +42,10 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
 
   const prevItem = useCallback(() => {
     setIndex((prev) => (prev - 1 + items.length) % items.length);
-    setCurrentZ(getNextZIndex());
   }, [items]);
 
   const nextItem = useCallback(() => {
     setIndex((prev) => (prev + 1) % items.length);
-    setCurrentZ(getNextZIndex());
   }, [items]);
 
   // Add keyboard navigation with proper cleanup
@@ -85,9 +80,8 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
     height: '900px',
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'hidden',
-    zIndex: currentZ,
-  }), [currentZ]);
+    overflow: 'hidden'
+  }), []);
 
   return (
     <WindowFrame
@@ -99,7 +93,6 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
     >
       <div 
         className="media-viewer"
-        onMouseDown={() => setCurrentZ(getNextZIndex())}
       >
         <div className="media-content">
           {isLoading && currentItem.type === 'image' && (
