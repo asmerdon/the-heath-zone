@@ -12,13 +12,20 @@ const debounce = (fn, ms) => {
   };
 };
 
-export default function WindowFrame({ title, children, onClose, defaultPosition, style = {}, onPositionChange }) {
+export default function WindowFrame({ title, children, onClose, defaultPosition, style = {}, onPositionChange, forceZIndex = false }) {
   const windowRef = useRef();
   const [position, setPosition] = useState(defaultPosition || { x: 100, y: 100 });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [currentZ, setCurrentZ] = useState(getNextZIndex());
+
+  // Update z-index when forceZIndex changes
+  useEffect(() => {
+    if (forceZIndex) {
+      setCurrentZ(getNextZIndex());
+    }
+  }, [forceZIndex]);
 
   // Memoized position style
   const positionStyle = useMemo(() => ({

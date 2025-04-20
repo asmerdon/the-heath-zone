@@ -41,7 +41,7 @@ const Background = memo(({ showBackground }) => {
           loop
           muted
           playsInline
-          src="bg-loop.mkv"
+          src="bg-loop-compressed.mp4"
           onLoadedData={() => setIsVideoLoaded(true)}
           onError={() => setIsVideoLoaded(false)}
           style={{

@@ -126,7 +126,11 @@ export default function App() {
           title="Artwork"
           collections={artworkCollections}
           onClose={() => setShowArtwork(false)}
-          onOpenImage={(images, index) => setViewerData({ images, index })}
+          onOpenImage={(images, index) => {
+            setViewerData({ images, index });
+            // Force z-index update by incrementing windowCount
+            setWindowCount(prev => prev + 1);
+          }}
           defaultPosition={getWindowPosition(1, 'media')}
           onPositionChange={handleWindowUpdate}
         />

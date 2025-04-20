@@ -1,14 +1,20 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import WindowFrame from './WindowFrame';
 import '../styles/WindowStyles.css';
 
 export default function MediaViewer({ items, startIndex, onClose, onPositionChange }) {
   const [index, setIndex] = useState(startIndex);
   const [isLoading, setIsLoading] = useState(true);
+  const [forceZIndex, setForceZIndex] = useState(false);
+  const windowRef = useRef();
 
   // Reset index when items change
   useEffect(() => {
     setIndex(startIndex);
+    // Force z-index update
+    setForceZIndex(true);
+    const timer = setTimeout(() => setForceZIndex(false), 0);
+    return () => clearTimeout(timer);
   }, [items, startIndex]);
 
   // Preload next and previous images
@@ -85,11 +91,13 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
 
   return (
     <WindowFrame
+      ref={windowRef}
       title="Viewer"
       onClose={onClose}
       defaultPosition={{ x: 1200, y: 100 }}
       onPositionChange={onPositionChange}
       style={windowStyle}
+      forceZIndex={forceZIndex}
     >
       <div 
         className="media-viewer"
