@@ -82,15 +82,32 @@ export default function App() {
 
   // Memoized splash window content
   const splashContent = useMemo(() => (
-    <div className="ui-window" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <h2 className="window-title">The Heath Zone</h2>
+    <div className="ui-window" style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      padding: '1rem 0',
+      background: 'transparent',
+    }}>
+      <img 
+        src="logo-text.png" 
+        alt="The Heath Zone" 
+        style={{ 
+          width: '500px', 
+          height: 'auto', 
+          marginBottom: '0.8rem',
+          filter: 'drop-shadow(0 0 2px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))',
+          imageRendering: 'crisp-edges',
+          WebkitFontSmoothing: 'antialiased',
+        }} 
+      />
       <p style={{ marginBottom: '1.5rem', opacity: 0.9 }}>you are officially in the zone</p>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
         <a onClick={() => handleOpenWindow(setShowArtwork)} className="glass-button">Artwork</a>
         <a onClick={() => handleOpenWindow(setShowPhotography)} className="glass-button">Photography</a>
         <a href="https://soundcloud.com/user-952972706" target="_blank" rel="noopener noreferrer" className="glass-button">Beats</a>
-        <a href="https://www.mixcloud.com/Altwych/" target="_blank" rel="noopener noreferrer" className="glass-button">Radio Show</a>
+        <a href="https://linktr.ee/altwych?fbclid=PAZXh0bgNhZW0CMTEAAafUkxRSq8gZOuV99WfQ5mynPf6QKhlnBHXlUcERa-qcsbxi_0pQNjvpPh1uKQ_aem_DMTITx-NLlhDUK-1VQrjZA" target="_blank" rel="noopener noreferrer" className="glass-button">Radio Show</a>
         {/* <a href="https://www.are.na/the-heath/channels" target="_blank" rel="noopener noreferrer" className="glass-button">Are.na</a> */}
       </div>
     </div>
