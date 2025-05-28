@@ -18,8 +18,10 @@ const getWindowPosition = (index, windowType) => {
   const isSmallScreen = screenWidth < 768;
   
   // Base window dimensions
-  const windowWidth = windowType === 'splash' ? 550 : 800;
-  const windowHeight = windowType === 'splash' ? 300 : 600;
+  const windowWidth = windowType === 'splash' ? 550 : 
+                     windowType === 'viewer' ? 500 : 650;  // Added viewer size
+  const windowHeight = windowType === 'splash' ? 300 : 
+                      windowType === 'viewer' ? 400 : 500; // Added viewer size
   
   // Calculate center position
   const centerX = (screenWidth - windowWidth) / 2;

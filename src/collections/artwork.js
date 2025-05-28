@@ -1,5 +1,28 @@
 export const artworkCollections = [
   {
+    name: '360',
+    description: "A series of renders inspired by the Rubik's 360. Created May 2025.",
+    items: [
+      {
+        type: 'image',
+        url: 'artwork/360/360-1.png'
+      },
+      {
+        type: 'image',
+        url: 'artwork/360/360-2.png'
+      },
+      {
+        type: 'image',
+        url: 'artwork/360/360-3.png'
+      },
+      {
+        type: 'video',
+        url: 'artwork/360/360-video.mp4',
+        thumbnail: 'artwork/360/360-1.png'
+      }
+    ]
+  },
+  {
     name: 'PAID IN BRITAIN',
     description: "Man's getting PAID. Created April 2025.",
     items: [
@@ -44,6 +67,10 @@ export const artworkCollections = [
       {
         type: 'image',
         url: 'artwork/into-light/3.jpg'
+      },
+      {
+        type: 'image',
+        url: 'artwork/into-light/4.PNG'
       },
       {
         type: 'video',
