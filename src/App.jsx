@@ -103,7 +103,35 @@ export default function App() {
           WebkitFontSmoothing: 'antialiased',
         }} 
       />
-      <p style={{ marginBottom: '1.5rem', opacity: 0.9 }}>you are officially in the zone</p>
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        gap: '3rem', 
+        marginBottom: '1.5rem' 
+      }}>
+        <img 
+          src="logo-icon.png" 
+          alt="Logo" 
+          style={{ 
+            width: '60px', 
+            height: '60px', 
+            opacity: 0.9,
+            filter: 'drop-shadow(0 0 2px rgba(0, 0, 0, 0.3))',
+          }} 
+        />
+        <p style={{ margin: 0, opacity: 0.9 }}>you are officially in the zone</p>
+        <img 
+          src="logo-icon.png" 
+          alt="Logo" 
+          style={{ 
+            width: '60px', 
+            height: '60px', 
+            opacity: 0.9,
+            filter: 'drop-shadow(0 0 2px rgba(0, 0, 0, 0.3))',
+          }} 
+        />
+      </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
         <a onClick={() => handleOpenWindow(setShowArtwork)} className="glass-button">Artwork</a>
