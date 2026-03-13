@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://www.the-heath-zone.one",
+  "homepage": "https://the-heath-zone.one",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
