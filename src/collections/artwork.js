@@ -1,4 +1,23 @@
-export const artworkCollections = [
+const artworkCollectionData = [
+  {
+    name: 'Wave',
+    description: 'A motion piece.',
+    items: [
+      {
+        type: 'image',
+        url: 'artwork/wave/1.png'
+      },
+      {
+        type: 'image',
+        url: 'artwork/wave/2.PNG'
+      },
+      {
+        type: 'video',
+        url: 'artwork/wave/Wavy Final.mp4',
+        thumbnail: 'artwork/wave/1.png'
+      }
+    ]
+  },
   {
     name: '360',
     description: "A series of renders inspired by the Rubik's 360. Created May 2025.",
@@ -24,6 +43,7 @@ export const artworkCollections = [
   },
   {
     name: 'PAID IN BRITAIN',
+    hidden: true,
     description: "Man's getting PAID. Created April 2025.",
     items: [
       {
@@ -79,4 +99,6 @@ export const artworkCollections = [
       }
     ]
   }
-]; 
+];
+
+export const artworkCollections = artworkCollectionData.filter((collection) => !collection.hidden);

@@ -8,6 +8,15 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
   const [forceZIndex, setForceZIndex] = useState(false);
   const windowRef = useRef();
 
+  // Memoized window style
+  const windowStyle = useMemo(() => ({
+    width: '900px',
+    height: '900px',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden'
+  }), []);
+
   // Reset index when items change
   useEffect(() => {
     setIndex(startIndex);
@@ -32,6 +41,8 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
       const img = new Image();
       img.onload = () => setIsLoading(false);
       img.src = currentItem.url;
+    } else {
+      setIsLoading(false);
     }
 
     // Preload next and previous images
@@ -79,15 +90,6 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
   }
 
   const currentItem = items[index];
-
-  // Memoized window style
-  const windowStyle = useMemo(() => ({
-    width: '900px',
-    height: '900px',
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden'
-  }), []);
 
   return (
     <WindowFrame

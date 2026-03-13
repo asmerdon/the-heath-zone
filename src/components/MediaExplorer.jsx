@@ -4,6 +4,11 @@ import WindowFrame from './WindowFrame';
 export default function MediaExplorer({ title, collections, onClose, onOpenImage, defaultPosition, onPositionChange }) {
   const [selectedCollection, setSelectedCollection] = useState(null);
 
+  const getPreviewUrl = (item) => {
+    if (!item) return null;
+    return item.type === 'image' ? item.url : item.thumbnail || null;
+  };
+
   return (
     <WindowFrame
       title={selectedCollection ? selectedCollection.name : title}
@@ -28,25 +33,32 @@ export default function MediaExplorer({ title, collections, onClose, onOpenImage
                 border: '1px solid rgba(255,255,255,0.2)',
               }}
             >
-              <div
-                style={{
-                  width: '100%',
-                  height: '120px',
-                  backgroundImage: col.items?.length ? `url(${col.items[0].type === 'image' ? col.items[0].url : col.items[0].thumbnail})` : 'none',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  borderRadius: '6px',
-                  marginBottom: '0.5rem',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#fff',
-                  fontSize: '1.5rem',
-                }}
-              >
-                {!col.items?.length && '📁'}
-              </div>
+              {(() => {
+                const previewUrl = getPreviewUrl(col.items?.[0]);
+
+                return (
+                  <div
+                    style={{
+                      width: '100%',
+                      height: '120px',
+                      backgroundImage: previewUrl ? `url("${previewUrl}")` : 'none',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      borderRadius: '6px',
+                      marginBottom: '0.5rem',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#fff',
+                      fontSize: '1.5rem',
+                    }}
+                  >
+                    {!col.items?.length && '📁'}
+                    {col.items?.length > 0 && !previewUrl && '▶'}
+                  </div>
+                );
+              })()}
               <p style={{ color: '#fff', fontSize: '0.9rem' }}>{col.name}</p>
             </div>
           ))}
@@ -98,17 +110,44 @@ export default function MediaExplorer({ title, collections, onClose, onOpenImage
                   cursor: 'pointer',
                 }}
               >
-                <img
-                  src={item.type === 'image' ? item.url : item.thumbnail}
-                  alt=""
-                  className="gallery-thumb"
-                  style={{
-                    width: '200px',
-                    height: '200px',
-                    objectFit: 'cover',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                  }}
-                />
+                {(() => {
+                  const previewUrl = getPreviewUrl(item);
+
+                  if (previewUrl) {
+                    return (
+                      <img
+                        src={previewUrl}
+                        alt=""
+                        className="gallery-thumb"
+                        style={{
+                          width: '200px',
+                          height: '200px',
+                          objectFit: 'cover',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                        }}
+                      />
+                    );
+                  }
+
+                  return (
+                    <div
+                      className="gallery-thumb"
+                      style={{
+                        width: '200px',
+                        height: '200px',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: '2rem',
+                      }}
+                    >
+                      ▶
+                    </div>
+                  );
+                })()}
                 {item.type === 'video' && (
                   <div className="video-play-button">
                     <div style={{

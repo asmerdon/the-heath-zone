@@ -135,10 +135,6 @@
   cursor: default !important;
 }
 
-.window-frame {
-  /* removed isolation and transform properties */
-}
-
 .window-frame .titlebar {
   background: linear-gradient(to right, rgba(0, 255, 200, 0.35), rgba(0, 150, 255, 0.25));
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
@@ -203,7 +199,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: rgba(17, 195, 219, 0.25);
-  backdropFilter: blur(8px);
+  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 50%;
