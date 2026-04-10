@@ -1,5 +1,29 @@
 const artworkCollectionData = [
   {
+    name: 'Commuter',
+    description: 'Thammey-Link life.',
+    thumbnailSize: 'contain',
+    items: [
+      {
+        type: 'image',
+        url: 'artwork/commuter/1.png'
+      },
+      {
+        type: 'image',
+        url: 'artwork/commuter/2.JPG'
+      },
+      {
+        type: 'image',
+        url: 'artwork/commuter/3.png'
+      },
+      {
+        type: 'video',
+        url: 'artwork/commuter/Commuter.mp4',
+        thumbnail: 'artwork/commuter/1.png'
+      }
+    ]
+  },
+  {
     name: 'Wave',
     description: 'A motion piece.',
     items: [

@@ -33,7 +33,7 @@ export default function ArtworkExplorer({ onClose, onOpenImage }) {
                   width: '100%',
                   height: '120px',
                   backgroundImage: col.items?.length ? `url(${col.items[0].type === 'image' ? col.items[0].url : col.items[0].thumbnail})` : 'none',
-                  backgroundSize: 'cover',
+                  backgroundSize: col.thumbnailSize || 'cover',
                   backgroundPosition: 'center',
                   borderRadius: '6px',
                   marginBottom: '0.5rem',
