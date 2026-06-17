@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import WindowFrame from './WindowFrame';
+import { useResponsiveWindow } from '../useViewport';
 import '../styles/WindowStyles.css';
 
 export default function MediaViewer({ items, startIndex, onClose, onPositionChange }) {
@@ -8,14 +9,21 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
   const [forceZIndex, setForceZIndex] = useState(false);
   const windowRef = useRef();
 
+  // Scale the viewer to the current screen, keeping the desktop size
+  // when there's room and shrinking to fit on smaller screens/laptops.
+  const responsive = useResponsiveWindow({
+    preferredWidth: 900,
+    preferredHeight: 900,
+  });
+
   // Memoized window style
   const windowStyle = useMemo(() => ({
-    width: '900px',
-    height: '900px',
+    width: `${responsive.width}px`,
+    height: `${responsive.height}px`,
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden'
-  }), []);
+  }), [responsive.width, responsive.height]);
 
   // Reset index when items change
   useEffect(() => {
@@ -96,7 +104,7 @@ export default function MediaViewer({ items, startIndex, onClose, onPositionChan
       ref={windowRef}
       title="Viewer"
       onClose={onClose}
-      defaultPosition={{ x: 1200, y: 100 }}
+      defaultPosition={{ x: responsive.x, y: responsive.y }}
       onPositionChange={onPositionChange}
       style={windowStyle}
       forceZIndex={forceZIndex}

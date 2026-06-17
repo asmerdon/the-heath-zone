@@ -1,8 +1,17 @@
 import { useState } from 'react';
 import WindowFrame from './WindowFrame';
+import { useViewport } from '../useViewport';
 
 export default function MediaExplorer({ title, collections, onClose, onOpenImage, defaultPosition, onPositionChange }) {
   const [selectedCollection, setSelectedCollection] = useState(null);
+  const { width: vw, height: vh } = useViewport();
+
+  // Keep the explorer within the screen so its image grid never overflows.
+  const windowStyle = {
+    maxWidth: `${Math.min(920, vw * 0.92)}px`,
+    maxHeight: `${vh * 0.85}px`,
+    overflow: 'hidden',
+  };
 
   const getPreviewUrl = (item) => {
     if (!item) return null;
@@ -15,6 +24,7 @@ export default function MediaExplorer({ title, collections, onClose, onOpenImage
       onClose={onClose}
       defaultPosition={defaultPosition || { x: 350, y: 350 }}
       onPositionChange={onPositionChange}
+      style={windowStyle}
     >
       {!selectedCollection ? (
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem' }}>
@@ -91,11 +101,11 @@ export default function MediaExplorer({ title, collections, onClose, onOpenImage
             </p>
           </div>
 
-          <div className="gallery-container" style={{ 
+          <div className="gallery-container" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 200px)',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
             gap: '1rem',
-            maxHeight: '420px',
+            maxHeight: `${Math.min(420, vh * 0.55)}px`,
             overflowY: 'auto',
             padding: '0.5rem',
             paddingRight: '1rem',
@@ -120,8 +130,8 @@ export default function MediaExplorer({ title, collections, onClose, onOpenImage
                         alt=""
                         className="gallery-thumb"
                         style={{
-                          width: '200px',
-                          height: '200px',
+                          width: '100%',
+                          aspectRatio: '1 / 1',
                           objectFit: 'cover',
                           border: '1px solid rgba(255,255,255,0.2)',
                         }}
@@ -133,8 +143,8 @@ export default function MediaExplorer({ title, collections, onClose, onOpenImage
                     <div
                       className="gallery-thumb"
                       style={{
-                        width: '200px',
-                        height: '200px',
+                        width: '100%',
+                        aspectRatio: '1 / 1',
                         border: '1px solid rgba(255,255,255,0.2)',
                         background: 'rgba(255, 255, 255, 0.08)',
                         display: 'flex',
