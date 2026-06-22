@@ -165,18 +165,20 @@ const MarbleGame = forwardRef(({ onWindowUpdate, size }, ref) => {
     Matter.Render.run(render);
 
     const handleResize = () => {
-      const canvas = render.canvas;
       const width = window.innerWidth;
       const height = window.innerHeight;
-      
+
+      // Keep the render bounds and logical size in sync with the window...
+      render.options.width = width;
+      render.options.height = height;
       render.bounds.max.x = width;
       render.bounds.max.y = height;
-      
-      canvas.width = width;
-      canvas.height = height;
-      
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
+
+      // ...then let Matter resize the canvas buffer for the current
+      // devicePixelRatio. Doing this manually (without the ratio) on a retina
+      // screen left the context scaled by 2x, which rendered marbles and line
+      // surfaces at double size and double offset.
+      Matter.Render.setPixelRatio(render, window.devicePixelRatio || 1);
 
       // Update walls
       createWalls();
