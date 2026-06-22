@@ -1,4 +1,14 @@
 export const photographyCollections = [
+  {
+    name: '',
+    description: '',
+    items: [
+      {
+        type: 'image',
+        url: 'photos/trainview.jpg'
+      }
+    ]
+  },
   /*{
     name: 'Collection 2',
     description: 'Work in progress collection.',

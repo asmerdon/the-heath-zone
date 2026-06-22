@@ -1,5 +1,24 @@
 const artworkCollectionData = [
   {
+    name: 'Wave 2',
+    description: 'Iteration on original Wave project. Created June 2026.',
+    items: [
+      {
+        type: 'image',
+        url: 'artwork/wave-2/1.png'
+      },
+      {
+        type: 'image',
+        url: 'artwork/wave-2/2.JPG'
+      },
+      {
+        type: 'video',
+        url: 'artwork/wave-2/3.mp4',
+        thumbnail: 'artwork/wave-2/1.png'
+      }
+    ]
+  },
+  {
     name: 'Commuter',
     description: 'Thammey-Link life.',
     thumbnailSize: 'contain',

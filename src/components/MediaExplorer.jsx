@@ -13,6 +13,15 @@ export default function MediaExplorer({ title, collections, onClose, onOpenImage
     overflow: 'hidden',
   };
 
+  // Folder tiles are a fixed size, so cap the grid at 4 columns. This makes the
+  // window hug the content (4 per row, then wrap) instead of stretching to its
+  // max width and leaving dead space on the right.
+  const FOLDER_TILE = 160 + 16 + 2; // width + padding (0.5rem×2) + border (1px×2)
+  const FOLDER_GAP = 16; // 1rem
+  const FOLDER_COLUMNS = 4;
+  const folderGridMaxWidth =
+    FOLDER_TILE * FOLDER_COLUMNS + FOLDER_GAP * (FOLDER_COLUMNS - 1) + 4; // +4 px slack
+
   const getPreviewUrl = (item) => {
     if (!item) return null;
     return item.type === 'image' ? item.url : item.thumbnail || null;
@@ -27,11 +36,17 @@ export default function MediaExplorer({ title, collections, onClose, onOpenImage
       style={windowStyle}
     >
       {!selectedCollection ? (
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem' }}>
-          {collections.map((col) => (
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem', maxWidth: `${folderGridMaxWidth}px` }}>
+          {collections.map((col, i) => (
             <div
-              key={col.name}
-              onClick={() => setSelectedCollection(col)}
+              key={col.name || `loose-${i}`}
+              onClick={() =>
+                // Nameless "loose photo" folders skip the gallery grid and
+                // open straight in the Viewer; named collections browse normally.
+                col.name
+                  ? setSelectedCollection(col)
+                  : onOpenImage(col.items, 0)
+              }
               className="folder-thumb"
               style={{
                 cursor: 'pointer',
